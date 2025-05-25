@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using SUPPLY_API; // если SupplyComponentContext и модель в этом пространстве имён
+using SUPPLY_API.Models;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -26,7 +29,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddDbContext<SupplyComponentContext>();
 // Настройка JWT
 var secretKey = "YourSecureKeyHereMustBeLongEnough";
 var key = Encoding.UTF8.GetBytes(secretKey);

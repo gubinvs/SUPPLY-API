@@ -24,6 +24,7 @@ namespace SUPPLY_API
         public UserSystemDb() { }
 
         public UserSystemDb(
+            string guid,
             string email,
             string password,
             string token,
@@ -31,7 +32,7 @@ namespace SUPPLY_API
             bool adminUserSystem,
             DateTime registrationDate)
         {
-            GuidIdUser = Guid.NewGuid().ToString();
+            GuidIdUser = guid;
             EmailUser = email;
             PasswordUser = password;
             TokenUser = token;

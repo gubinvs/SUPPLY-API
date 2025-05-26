@@ -1,4 +1,4 @@
-using System;
+// Модель данных комплектующих
 
 namespace SUPPLY_API
 {

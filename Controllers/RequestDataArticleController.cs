@@ -55,26 +55,33 @@ namespace SUPPLY_API.Controllers
                     return Conflict(new { message = $"Компонент с артикулом {article} отсутствует в базе данных" });
                 }
 
+                // На основании артикула достали GuidIdComponent
                 var guidIdComponent = await _db.SupplyComponent
                     .Where(c => c.VendorCodeComponent == article)
                     .Select(c => c.GuidIdComponent)
                     .FirstOrDefaultAsync();
 
+                // На основании артикула достали Наименование компонента
                 var nameComponent = await _db.SupplyComponent
                     .Where(c => c.VendorCodeComponent == article)
                     .Select(c => c.NameComponent)
                     .FirstOrDefaultAsync();
 
+                // Загрузили все данные о ценах и сроках по GuidIdComponent
                 var offers = await _dbPrice.PriceComponent
                     .Where(p => p.GuidIdComponent == guidIdComponent)
                     .ToListAsync();
 
+                // Выбрали все GuidIdProvider
                 var providerIds = offers.Select(o => o.GuidIdProvider).Distinct().ToList();
 
+                // Достали названия компаний по GuidIdProvider
                 var providers = await _dbProvider.SupplyProvider
                     .Where(pr => providerIds.Contains(pr.GuidIdProvider))
                     .ToListAsync();
 
+
+                // Сделали выборку по GuidIdProvider
                 var offersWithNames = offers.Select(offer =>
                 {
                     var provider = providers.FirstOrDefault(p => p.GuidIdProvider == offer.GuidIdProvider);

@@ -8,11 +8,11 @@ namespace SUPPLY_API
 
         public string? NameProvider { get; set; }
 
-        public int? InnProvider { get; set; }
+        public string? InnProvider { get; set; }
 
         public ProviderDb() { }
 
-        public ProviderDb(string guid, string name, int inn)
+        public ProviderDb(string guid, string name, string inn)
         {
             GuidIdProvider = guid;
             NameProvider = name;

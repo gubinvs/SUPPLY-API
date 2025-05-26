@@ -30,6 +30,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<SupplyComponentContext>();
+builder.Services.AddDbContext<SupplyPriceComponentContext>();
+builder.Services.AddDbContext<SupplyProviderContext>();
 
 
 // Настройка JWT

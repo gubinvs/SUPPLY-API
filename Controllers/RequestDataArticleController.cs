@@ -18,12 +18,28 @@ namespace SUPPLY_API.Controllers
     public class RequestDataArticleController : ControllerBase
     {
         private readonly ILogger<AddComponentController> _logger;
+
+        // База данных с информацией о комплектующих
         private readonly SupplyComponentContext _db;
 
-        public RequestDataArticleController(ILogger<AddComponentController> logger, SupplyComponentContext db)
+        // База данных с ценами и сроками
+        private readonly SupplyPriceComponentContext _dbPrice;
+
+        // База данных с информацией о поставщиках
+        private readonly SupplyProviderContext _dbProvider;
+
+        public RequestDataArticleController(
+            ILogger<AddComponentController> logger,
+            SupplyComponentContext db,
+            SupplyPriceComponentContext dbPrice,
+            SupplyProviderContext dbProvider
+
+            )
         {
             _logger = logger;
             _db = db;
+            _dbPrice = dbPrice;
+            _dbProvider = dbProvider;
         }
 
         [HttpGet("{article}")]
@@ -31,7 +47,6 @@ namespace SUPPLY_API.Controllers
         {
             try
             {
-                // Проверка: существует ли компонент с таким же VendorCode
                 var existing = await _db.SupplyComponent
                     .AnyAsync(c => c.VendorCodeComponent == article);
 
@@ -40,48 +55,45 @@ namespace SUPPLY_API.Controllers
                     return Conflict(new { message = $"Компонент с артикулом {article} отсутствует в базе данных" });
                 }
 
-                // Если существует собираем данные из разных таблиц:
-
-                // Получаем Guid компонента
-                var guidId = await _db.SupplyComponent
+                var guidIdComponent = await _db.SupplyComponent
                     .Where(c => c.VendorCodeComponent == article)
                     .Select(c => c.GuidIdComponent)
                     .FirstOrDefaultAsync();
 
-                // Получаем все предложения по данному компоненту (цены и сроки)
-                // var offers = await _db.SupplyPrices
-                //     .Where(p => p.GuidIdComponent == guidId)
-                //     .Select(p => new
-                //     {
-                //         p.SupplierName,
-                //         p.Price,
-                //         p.DeliveryTime
-                //     })
-                //     .ToListAsync();
+                var nameComponent = await _db.SupplyComponent
+                    .Where(c => c.VendorCodeComponent == article)
+                    .Select(c => c.NameComponent)
+                    .FirstOrDefaultAsync();
 
-                // Возвращаем всё как JSON
+                var offers = await _dbPrice.PriceComponent
+                    .Where(p => p.GuidIdComponent == guidIdComponent)
+                    .ToListAsync();
+
+                var providerIds = offers.Select(o => o.GuidIdProvider).Distinct().ToList();
+
+                var providers = await _dbProvider.SupplyProvider
+                    .Where(pr => providerIds.Contains(pr.GuidIdProvider))
+                    .ToListAsync();
+
+                var offersWithNames = offers.Select(offer =>
+                {
+                    var provider = providers.FirstOrDefault(p => p.GuidIdProvider == offer.GuidIdProvider);
+                    return new
+                    {
+                        NameProvider = provider?.NameProvider ?? "Неизвестный поставщик",
+                        offer.PriceComponent,
+                        offer.DeliveryTimeComponent,
+                        offer.SaveDataPrice
+                    };
+                }).ToList();
+
+
                 return Ok(new
                 {
-                    Guid = guidId,
                     Article = article,
-                    Offers = "ldskj"
+                    NameComponent = nameComponent,
+                    Offers = offersWithNames
                 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-               
-
-                return Ok();
             }
             catch (Exception ex)
             {

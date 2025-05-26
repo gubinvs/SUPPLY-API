@@ -8,7 +8,7 @@ namespace SUPPLY_API
 
         public string? GuidIdProvider { get; set; }
 
-        public string? PriceComponent { get; set; }
+        public int? PriceComponent { get; set; }
 
         public string? DeliveryTimeComponent { get; set; }
 
@@ -22,7 +22,7 @@ namespace SUPPLY_API
                         (
                             string guidComponent,
                             string guidProvider,
-                            string price,
+                            int price,
                             string delivery,
                             DateTime dateTime
                         )

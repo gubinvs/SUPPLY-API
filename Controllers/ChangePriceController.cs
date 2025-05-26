@@ -116,7 +116,7 @@ namespace SUPPLY_API.Controllers
     public record ChangePriceModel(
         string VendorCodeComponent,
         string GuidIdProvider,
-        string PriceComponent,
+        int PriceComponent,
         string DeliveryTimeComponent
     );
 };

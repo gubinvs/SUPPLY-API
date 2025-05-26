@@ -10,6 +10,8 @@ namespace SUPPLY_API
 
         public string? PriceComponent { get; set; }
 
+        public string? DeliveryTimeComponent { get; set; }
+
         public DateTime SaveDataPrice { get; set; }
 
         // Пустой конструктор для EF Core
@@ -21,12 +23,14 @@ namespace SUPPLY_API
                             string guidComponent,
                             string guidProvider,
                             string price,
+                            string delivery,
                             DateTime dateTime
                         )
         {
             GuidIdComponent = guidComponent;
             GuidIdProvider = guidProvider;
             PriceComponent = price;
+            DeliveryTimeComponent = delivery;
             SaveDataPrice = dateTime;
         }
     }

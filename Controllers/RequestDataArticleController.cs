@@ -14,19 +14,19 @@ namespace SUPPLY_API.Controllers
     /// </summary>
 
     [ApiController]
-    [Route("api/[controller]/[article]")]
+    [Route("api/[controller]")]
     public class RequestDataArticleController : ControllerBase
     {
-                private readonly ILogger<AddComponentController> _logger;
+        private readonly ILogger<AddComponentController> _logger;
         private readonly SupplyComponentContext _db;
 
-        public RequestDataArticleController (ILogger<AddComponentController> logger, SupplyComponentContext db)
+        public RequestDataArticleController(ILogger<AddComponentController> logger, SupplyComponentContext db)
         {
             _logger = logger;
             _db = db;
         }
 
-        [HttpPost]
+        [HttpGet("{article}")]
         public async Task<IActionResult> ReadComponent(string article)
         {
             try
@@ -35,12 +35,37 @@ namespace SUPPLY_API.Controllers
                 var existing = await _db.SupplyComponent
                     .AnyAsync(c => c.VendorCodeComponent == article);
 
-                if (existing)
+                if (!existing)
                 {
-                    return Conflict(new { message = "Компонент с артикулом {article} отсутствует в базе данных" });
+                    return Conflict(new { message = $"Компонент с артикулом {article} отсутствует в базе данных" });
                 }
 
-                // Если существует собираем данные из разных таблиц
+                // Если существует собираем данные из разных таблиц:
+
+                // Получаем Guid компонента
+                var guidId = await _db.SupplyComponent
+                    .Where(c => c.VendorCodeComponent == article)
+                    .Select(c => c.GuidIdComponent)
+                    .FirstOrDefaultAsync();
+
+                // Получаем все предложения по данному компоненту (цены и сроки)
+                // var offers = await _db.SupplyPrices
+                //     .Where(p => p.GuidIdComponent == guidId)
+                //     .Select(p => new
+                //     {
+                //         p.SupplierName,
+                //         p.Price,
+                //         p.DeliveryTime
+                //     })
+                //     .ToListAsync();
+
+                // Возвращаем всё как JSON
+                return Ok(new
+                {
+                    Guid = guidId,
+                    Article = article,
+                    Offers = "ldskj"
+                });
 
 
 
@@ -53,7 +78,7 @@ namespace SUPPLY_API.Controllers
 
 
 
-                
+
                
 
                 return Ok();

@@ -167,3 +167,16 @@
 /Users/vladimirgubin/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.MvcApplicationPartsAssemblyInfo.cs
 /Users/vladimirgubin/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.sourcelink.json
 /Users/vladimirgubin/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.csproj.Up2Date
+/home/gubinvs/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.csproj.AssemblyReference.cache
+/home/gubinvs/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.GeneratedMSBuildEditorConfig.editorconfig
+/home/gubinvs/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.AssemblyInfoInputs.cache
+/home/gubinvs/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.AssemblyInfo.cs
+/home/gubinvs/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.csproj.CoreCompileInputs.cache
+/home/gubinvs/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.MvcApplicationPartsAssemblyInfo.cs
+/home/gubinvs/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.MvcApplicationPartsAssemblyInfo.cache
+/home/gubinvs/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.RazorAssemblyInfo.cache
+/home/gubinvs/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.RazorAssemblyInfo.cs
+/home/gubinvs/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.sourcelink.json
+/home/gubinvs/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.dll
+/home/gubinvs/SUPPLY-API/obj/Debug/net9.0/refint/SUPPLY-API.dll
+/home/gubinvs/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.pdb

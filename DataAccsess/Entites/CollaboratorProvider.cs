@@ -1,7 +1,7 @@
 // Класс содержит данные о пользователе компании
 namespace SUPPLY_API
 {
-    public class CollaboratorProvider
+    public class CollaboratorProviderDb
     {
         public int Id { get; set; }
 
@@ -16,9 +16,9 @@ namespace SUPPLY_API
         public string? PhoneCollaborator { get; set; }
 
         // Пустой конструктор для EF Core
-        public CollaboratorProvider() { }
+        public CollaboratorProviderDb() { }
 
-        public CollaboratorProvider
+        public CollaboratorProviderDb
                                     (
                                         string guidCollaborator,
                                         string guidProvider,

@@ -1,6 +1,6 @@
 namespace SUPPLY_API
 {
-    public class Provider
+    public class ProviderDb
     {
         public int Id { get; set; }
 
@@ -10,9 +10,9 @@ namespace SUPPLY_API
 
         public int? InnProvider { get; set; }
 
-        public Provider() { }
+        public ProviderDb() { }
 
-        public Provider(string guid, string name, int inn)
+        public ProviderDb(string guid, string name, int inn)
         {
             GuidIdProvider = guid;
             NameProvider = name;

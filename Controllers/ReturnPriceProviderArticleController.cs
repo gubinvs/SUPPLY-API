@@ -15,7 +15,7 @@ namespace SUPPLY_API.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
-    public class RequestDataArticleController : ControllerBase
+    public class ReturnPriceProviderArticleController : ControllerBase
     {
         private readonly ILogger<AddComponentController> _logger;
 
@@ -28,7 +28,7 @@ namespace SUPPLY_API.Controllers
         // База данных с информацией о поставщиках
         private readonly SupplyProviderContext _dbProvider;
 
-        public RequestDataArticleController(
+        public ReturnPriceProviderArticleController(
             ILogger<AddComponentController> logger,
             SupplyComponentContext db,
             SupplyPriceComponentContext dbPrice,

@@ -9,7 +9,7 @@ namespace SUPPLY_API.Controllers
     /// Контроллер возвращает на запрос данные о всех компаниях (поставщиках) записанных в базе данных
     /// </summary>
     [ApiController]
-    [Route("api")]
+    [Route("api/[controller]")]
 
     public class ReturnListProviderController : ControllerBase
     {
@@ -19,9 +19,8 @@ namespace SUPPLY_API.Controllers
         private readonly SupplyProviderContext _dbProvider;
 
         public ReturnListProviderController(
-            ILogger<AddComponentController> logger,
-            SupplyProviderContext dbProvider
-
+                ILogger<AddComponentController> logger,
+                SupplyProviderContext dbProvider
             )
         {
             _logger = logger;

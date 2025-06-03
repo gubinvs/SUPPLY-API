@@ -54,22 +54,23 @@ namespace SUPPLY_API.Controllers
                 // Проверка пароля сохраненного в базе данных и который пришел в запросе
                 if (model.Password == user.PasswordCollaborator)
                 {
-                    // Если проверка прошла успешно - создаем токен
                     var token = _tokenService.GenerateToken(model.Email, "User");
 
-                    // Формируем запрос к базе данных для изменения в ней токена
                     if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(user.EmailCollaborator))
                     {
                         db.Database.ExecuteSqlRaw(
                             "UPDATE CollaboratorSystem SET TokenSystem={0} WHERE EmailCollaborator={1}",
                             token, user.EmailCollaborator);
                     }
-                    
-                    // Записываем в базу данных новый токен
+
                     db.SaveChanges();
 
-                    // Отправляем токен в ответ на запрос
-                    return Ok(new { Token = token });
+                    // Отправляем токен и GuidIdRoleSystem
+                    return Ok(new 
+                    {
+                        Token = token,
+                        RoleId = user.GuidIdRoleSystem  // ← возвращаем нужное поле
+                    });
                 }
 
                 // Если проверка не прошла, отправляем ответ

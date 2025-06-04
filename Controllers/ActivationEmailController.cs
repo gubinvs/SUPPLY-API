@@ -32,6 +32,11 @@ namespace SUPPLY_API
                     db.SaveChanges();
                 }
 
+                if (string.IsNullOrWhiteSpace(user.EmailCollaborator))
+{
+                    return BadRequest(new { message = "Email пользователя отсутствует." });
+                }
+
                 // Отправка email с подтверждением
                 SendConfirmationEmail(user.EmailCollaborator, user.GuidIdCollaborator);
 

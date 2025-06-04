@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace SUPPLY_API
 {
@@ -66,7 +64,7 @@ namespace SUPPLY_API
 
         private void SendConfirmationEmail(string email, string guid)
         {
-            var confirmationLink = $"http://localhost:8080/api/activationemail/confirm/{guid}";
+            var confirmationLink = $"{CurrentServer.ServerAddress}/api/activationemail/confirm/{guid}";
             var subject = "Подтверждение регистрации";
             var body = $"Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке:\n\n{confirmationLink}";
 

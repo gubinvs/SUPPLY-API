@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
-using System.Net.Mail;
-using System.Text;
 
 namespace SUPPLY_API
 {
@@ -20,9 +17,15 @@ namespace SUPPLY_API
         [HttpPost]
         public IActionResult Register([FromBody] RegistrationModel model)
         {
+         // Простая проверка на недопустимые значения
+            if (model.GuidIdRoleSystem == "string" || model.GuidIdRoleSystem == "Выбор роли")
+            {
+                return BadRequest(new { message = "Пожалуйста, выберите корректную роль." });
+            }
+
             using (CollaboratorSystemContext db = new CollaboratorSystemContext())
             {
-                var user = db.CollaboratorSystem.FromSqlRaw("SELECT * FROM userSystems")
+                var user = db.CollaboratorSystem.FromSqlRaw("SELECT * FROM CollaboratorSystem")
                                         .Where(p => p.EmailCollaborator == model.Email)
                                         .FirstOrDefault();
 
@@ -34,20 +37,19 @@ namespace SUPPLY_API
                 var guidId = Guid.NewGuid();
                 var token = _tokenService.GenerateToken(model.Email, "User");
 
-                // Записываем пользователя в базу данных с полем IsConfirmed = false
                 db.Database.ExecuteSqlRaw(
-                    "INSERT INTO userSystems (Email, Password, GuidId, Token, DataReg, IsAdmin, IsConfirmed) VALUES({0}, {1}, {2}, {3}, {4}, {5}, {6})",
-                    model.Email, model.Password, guidId, token, DateTime.Now, false, false
+                    "INSERT INTO CollaboratorSystem (GuidIdCollaborator, GuidIdRoleSystem, EmailCollaborator, PasswordCollaborator, DataRegistrationCollaborator, ActivationEmailCollaborator) VALUES({0}, {1}, {2}, {3}, {4}, {5})",
+                    guidId, model.GuidIdRoleSystem, model.Email, model.Password, DateTime.Now, false
                 );
 
                 db.SaveChanges();
 
-                // Отправка email с подтверждением
                 SendConfirmationEmail(model.Email, guidId);
 
                 return Ok(new { message = "Регистрация прошла успешно! Проверьте ваш email для подтверждения регистрации." });
             }
         }
+
 
         // Метод подтверждения по ссылке
         [HttpGet("confirm/{guid}")]
@@ -84,5 +86,5 @@ namespace SUPPLY_API
         }
     }
 
-    public record RegistrationModel(string Email, string Password);
+    public record RegistrationModel(string Email, string Password, string GuidIdRoleSystem);
 }

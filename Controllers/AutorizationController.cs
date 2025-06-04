@@ -42,7 +42,7 @@ namespace SUPPLY_API.Controllers
                 // Если пользователь не найден
                 if (user == null)
                 {
-                    return Ok(new { message = "Пользователь не найден. Пожалуйста, зарегистрируйтесь." });
+                    return Ok(new { message = "Пользователь не найден!" });
                 }
 
                 // Проверка подтверждения почты

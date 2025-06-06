@@ -1,29 +1,33 @@
-// using System;
-// using System.Text;
+using System;
+using System.Text;
 
-// public class PasswordGenerator
-// {
-//     private static readonly string ValidChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+-=[]{}|;:,.<>?";
 
-//     public static string GeneratePassword(int length)
-//     {
-//         Random rand = new Random();
-//         StringBuilder password = new StringBuilder(length);
+namespace SUPPLY_API
+{
+    public class PasswordGenerator
+    {
+        private static readonly string ValidChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+-=[]{}|;:,.<>?";
 
-//         for (int i = 0; i < length; i++)
-//         {
-//             // Выбираем случайный символ из допустимых символов
-//             password.Append(ValidChars[rand.Next(ValidChars.Length)]);
-//         }
+        public static string GeneratePassword(int length)
+        {
+            Random rand = new Random();
+            StringBuilder password = new StringBuilder(length);
 
-//         return password.ToString();
-//     }
+            for (int i = 0; i < length; i++)
+            {
+                // Выбираем случайный символ из допустимых символов
+                password.Append(ValidChars[rand.Next(ValidChars.Length)]);
+            }
 
-//     // Реализация в контроллере
-//     // public static void Main()
-//     // {
-//     //     int passwordLength = 12; // Указываем длину пароля
-//     //     string password = GeneratePassword(passwordLength);
-//     //     //Console.WriteLine("Generated Password: " + password);
-//     // }
-// }
+            return password.ToString();
+        }
+
+        // Реализация в контроллере
+        // public static void Main()
+        // {
+        //     int passwordLength = 12; // Указываем длину пароля
+        //     string password = GeneratePassword(passwordLength);
+        //     //Console.WriteLine("Generated Password: " + password);
+        // }
+    }
+}

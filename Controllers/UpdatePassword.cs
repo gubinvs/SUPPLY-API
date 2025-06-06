@@ -27,9 +27,7 @@ namespace SUPPLY_API
             using (CollaboratorSystemContext db = new CollaboratorSystemContext())
             {
                 // Загрузить пользователя из базы данных по email
-                var user = db.CollaboratorSystem.FromSqlRaw("SELECT * FROM CollaboratorSystem")
-                                        .Where(p => p.EmailCollaborator == model.Email)
-                                        .FirstOrDefault();
+                var user = db.CollaboratorSystem.FirstOrDefault(p => p.EmailCollaborator == model.Email);
 
                 if (user != null)
                 {

@@ -22,7 +22,7 @@
     <PackageReference Include="IdentityModel" Version="7.0.0" />
     <PackageReference Include="System.Web.Http" Version="4.0.0" />
     <PackageReference Include="Xceed.Words.NET" Version="4.0.25103.5784" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
+    <!-- <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" /> -->
     <PackageReference Include="EPPlus" Version="6.0.3" />
 
 

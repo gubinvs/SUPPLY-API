@@ -29,6 +29,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHostedService<EmailCleanupHostedService>();
 builder.Services.AddDbContext<SupplyComponentContext>();
 builder.Services.AddDbContext<SupplyPriceComponentContext>();
 builder.Services.AddDbContext<SupplyProviderContext>();

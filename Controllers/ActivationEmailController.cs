@@ -58,7 +58,9 @@ namespace SUPPLY_API
                 user.GuidIdCollaborator = null; // обнуляем GUID после подтверждения
                 db.SaveChanges();
 
-                return Ok(new { message = "Email подтверждён успешно!" });
+                // return Ok(new { message = "Email подтверждён успешно!" });
+                // Перенаправляем на страницу успеха
+                return Redirect($"{CurrentServer.ServerAddressFrontend}");
             }
         }
 

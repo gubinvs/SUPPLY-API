@@ -9,8 +9,20 @@ namespace SUPPLY_API
     /// - собирает всю информацию о пользователе и о компнаии
     /// и возвращает данные о компании пользователя и данные самого пользователя
     /// </summary>
+    /// 
+    /// 
+
+    [ApiController]
+    [Route("api/[controller]/{guidId}")]
     public class DataInfoPanelController : Controller
     {
+
+        [HttpGet]
+        public IActionResult DataInfoPanel(string guidId)
+        {
+
+            return Ok(new { massage = guidId });
+        }
 
     }
 }

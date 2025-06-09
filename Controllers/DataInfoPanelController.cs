@@ -26,10 +26,16 @@ namespace SUPPLY_API
 
                 using (var dbCompanyCollaborator = new CompanyCollaboratorContext())
                 {
-                    companyGuids = dbCompanyCollaborator.CompanyCollaborator
-                        .FromSqlRaw("SELECT * FROM CompanyCollaborator WHERE GuidIdCollaborator = {0}", user.GuidIdCollaborator)
+                    if (string.IsNullOrEmpty(user.GuidIdCollaborator))
+                    {
+                        return BadRequest(new { message = "Некорректный GuidIdCollaborator у пользователя." });
+                    }
+                   companyGuids = dbCompanyCollaborator.CompanyCollaborator
+                        .Where(p => p.GuidIdCollaborator == user.GuidIdCollaborator)
                         .Select(p => p.GuidIdCompany)
+                        .Where(g => g != null)
                         .ToList();
+
                 }
 
                 return Ok(new

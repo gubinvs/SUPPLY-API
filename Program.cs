@@ -34,6 +34,8 @@ builder.Services.AddDbContext<SupplyComponentContext>();
 builder.Services.AddDbContext<SupplyPriceComponentContext>();
 builder.Services.AddDbContext<SupplyProviderContext>();
 builder.Services.AddDbContext<CompanyCollaboratorContext>();
+builder.Services.AddDbContext<SupplyCompanyContext>();
+builder.Services.AddDbContext<DeliveryAddressContext>();
 
 
 // Настройка JWT

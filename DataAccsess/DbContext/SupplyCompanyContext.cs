@@ -6,20 +6,20 @@ namespace SUPPLY_API
     /// <summary>
     /// Подключение к таблице "SupplyComponent" базы данных "gubinv_supply"
     /// </summary>
-    public class CompanyCollaboratorContext : DbContext
+    public class SupplyCompanyContext : DbContext
     {
         /// <summary>
         /// Таблица с данными о пользователях системы
         /// </summary>
-        public DbSet<CompanyCollaboratorDb> CompanyCollaborator { get; set; } = null!;
+        public DbSet<SupplyCompanyDb> SupplyCompany { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<CompanyCollaboratorDb>((pc =>
+            modelBuilder.Entity<SupplyCompanyDb>((pc =>
             {
                 pc.HasKey(u => u.Id);
-                pc.ToTable("CompanyCollaborator");
+                pc.ToTable("SupplyCompany");
             }));
         }
 

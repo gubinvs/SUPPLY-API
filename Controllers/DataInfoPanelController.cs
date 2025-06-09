@@ -13,36 +13,76 @@ namespace SUPPLY_API
         {
             using (var db = new CollaboratorSystemContext())
             {
-                // Поиск пользователя
-                var user = db.CollaboratorSystem.FirstOrDefault(p => p.GuidIdCollaborator == guidId);
+                // Поиск пользователя и сбор данных о нем
+                var user = db.CollaboratorSystem
+                    .Where(p => p.GuidIdCollaborator == guidId)
+                    .Select(p => new
+                    {
+                        p.GuidIdCollaborator,
+                        p.GuidIdRoleSystem,
+                        p.NameCollaborator,
+                        p.EmailCollaborator,
+                        p.PhoneCollaborator,
+                        p.DataRegistrationCollaborator
+
+                    })
+                    .FirstOrDefault();
 
                 if (user == null)
                 {
                     return Ok(new { message = "Пользователь не найден." });
                 }
 
-                // Вынесем переменную наружу
-                List<string?> companyGuids;
 
+                // Соберем адреса доставки пользователя
+                List<string?> deliveryAddress;
+
+                using (var _dbDeliveryAddress = new DeliveryAddressContext())
+                { 
+                    deliveryAddress = _dbDeliveryAddress.DeliveryAddress
+                        .Where(p => p.GuidIdCollaboratorSystem == user.GuidIdCollaborator)
+                        .Select(p => p.DeliveryAddress)
+                        .ToList();                 
+
+                }
+
+
+                // Соберем список GuidIdCompany, к которым относится данный пользователь
+                List<string?> companyGuids;
+                
                 using (var dbCompanyCollaborator = new CompanyCollaboratorContext())
                 {
                     if (string.IsNullOrEmpty(user.GuidIdCollaborator))
                     {
                         return BadRequest(new { message = "Некорректный GuidIdCollaborator у пользователя." });
                     }
-                   companyGuids = dbCompanyCollaborator.CompanyCollaborator
+
+                    companyGuids = dbCompanyCollaborator.CompanyCollaborator
                         .Where(p => p.GuidIdCollaborator == user.GuidIdCollaborator)
                         .Select(p => p.GuidIdCompany)
                         .Where(g => g != null)
                         .ToList();
-
                 }
+
+                // Теперь соберем данные о компаниях которые представляет пользователь
+                List<SupplyCompanyDb> companyInfo;
+
+                using (var dbCompany = new SupplyCompanyContext())
+                {
+                    companyInfo = dbCompany.SupplyCompany
+                        .Where(p => companyGuids.Contains(p.GuidIdCompany))
+                        .ToList();
+                }
+
+
 
                 return Ok(new
                 {
                     message = "Данные о пользователе и компании",
                     user,
-                    companyGuids
+                    deliveryAddress,
+                    companyGuids,
+                    companyInfo
                 });
             }
         }

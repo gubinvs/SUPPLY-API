@@ -33,6 +33,7 @@ builder.Services.AddHostedService<EmailCleanupHostedService>();
 builder.Services.AddDbContext<SupplyComponentContext>();
 builder.Services.AddDbContext<SupplyPriceComponentContext>();
 builder.Services.AddDbContext<SupplyProviderContext>();
+builder.Services.AddDbContext<CompanyCollaboratorContext>();
 
 
 // Настройка JWT

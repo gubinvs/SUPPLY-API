@@ -66,10 +66,11 @@ namespace SUPPLY_API.Controllers
                     db.SaveChanges();
 
                     // Отправляем токен и GuidIdRoleSystem
-                    return Ok(new 
+                    return Ok(new
                     {
                         Token = token,
-                        RoleId = user.GuidIdRoleSystem  // ← возвращаем нужное поле
+                        RoleId = user.GuidIdRoleSystem,  // ← возвращаем нужное поле
+                        guidIdCollaborator = user.GuidIdCollaborator
                     });
                 }
 

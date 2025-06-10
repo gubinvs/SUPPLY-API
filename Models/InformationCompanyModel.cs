@@ -15,6 +15,7 @@ namespace SUPPLY_API
         string FullNameCompany,
         string AbbreviatedNameCompany,
         long InnCompany,
-        string AddressCompany
+        string AddressCompany,
+        string GuidIdCollaborator
     );
 };

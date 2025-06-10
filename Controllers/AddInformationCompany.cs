@@ -47,7 +47,7 @@ namespace SUPPLY_API
                     {
                         // Формируем запрос в базу данных
                         _dbCompanyCollaborator.Database.ExecuteSqlRaw(
-                            "INSERT INTO CompanyCollaborator (GuidIdCollaborator, GuidIdCompany) VALUES({0}, {1})",
+                            "INSERT INTO `CompanyCollaborator` (GuidIdCollaborator, GuidIdCompany) VALUES({0}, {1})",
                             model.GuidIdCollaborator, GuidIdCompany
                         );
 

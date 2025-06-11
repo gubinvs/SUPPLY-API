@@ -42,10 +42,10 @@ namespace SUPPLY_API
                     // Для этого берём данные о новом (GuidIdCompany) и (GuidIdCollaborator) — то что пришло к нам из формы запроса.
                     // Пользователь, который создавал эту компанию
 
-                    // Подключаемся к новой базе данных
+                    // Подключаемся к другой базе данных, там где хранятся привязки пользователя к компании
                     using (var _dbCompanyCollaborator = new CompanyCollaboratorContext())
                     {
-                        // Формируем запрос в базу данных
+                        // Формируем запрос в базу данных для записи данных
                         _dbCompanyCollaborator.Database.ExecuteSqlRaw(
                             "INSERT INTO `CompanyCollaborator` (GuidIdCollaborator, GuidIdCompany) VALUES({0}, {1})",
                             model.GuidIdCollaborator, GuidIdCompany
@@ -61,11 +61,47 @@ namespace SUPPLY_API
                 }
 
                 // Теперь если компания уже есть в базе
+                // Заменяем данные новыми
+                
+                _db.Database.ExecuteSqlRaw(
+                        "UPDATE SupplyCompany SET FullNameCompany = {0}, AbbreviatedNameCompany = {1}, InnCompany = {2}, AddressCompany = {3} WHERE GuidIdCompany = {4}",
+                        model.FullNameCompany, model.AbbreviatedNameCompany, model.InnCompany, model.AddressCompany, model.GuidIdCompany
+                    );
 
+                // Сохраняем изменения (необязательно после ExecuteSqlRaw, но пусть будет для единообразия)
+                _db.SaveChanges();
 
+                // Снова подключаемся к базе данных, в которой хранятся привязки пользователя к компании
+                using (var _dbCompanyCollaborator = new CompanyCollaboratorContext())
+                {
 
-                // Возвращаем ответ
-                return Ok(new { message = "Данные о компании изменены в базу." });
+                    // И проверяем существование данной зависимости между пользователем и компанией
+                    var relationship = _dbCompanyCollaborator.CompanyCollaborator
+                        .Where(p => p.GuidIdCollaborator == model.GuidIdCollaborator && p.GuidIdCompany == model.GuidIdCompany)
+                        .FirstOrDefault();
+
+                    //если такой зависимости нет, создаем ее
+                    if (relationship == null)
+                    {
+                        // Формируем запрос в базу данных для записи данных
+                        _dbCompanyCollaborator.Database.ExecuteSqlRaw(
+                            "INSERT INTO `CompanyCollaborator` (GuidIdCollaborator, GuidIdCompany) VALUES({0}, {1})",
+                            model.GuidIdCollaborator, GuidIdCompany
+                        );
+
+                        // Записали в базу данных
+                        _dbCompanyCollaborator.SaveChanges();
+ 
+                        // Возвращаем ответ
+                        return Ok(new { message = "Зависимость пользователя и компании установлена." });
+
+                    }
+                    
+                    // Возвращаем ответ
+                    return Ok(new { message = "Зависимость пользователя и компании существует." });
+
+                    
+                }
             }
         }
     }

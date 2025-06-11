@@ -15,6 +15,13 @@ namespace SUPPLY_API
         [HttpPost]
         public IActionResult AddInformationCompany([FromBody] InformationCompanyModel model)
         {
+            // Проверка: ИНН должен быть из 10 или 12 цифр
+            string inn = model.InnCompany.ToString();
+            if (!(inn.Length == 10 || inn.Length == 12) || !inn.All(char.IsDigit))
+            {
+                return BadRequest(new { message = "ИНН должен содержать 10 или 12 цифр." });
+            }
+
             // Сгенерировали новый идентификатор компании
             string GuidIdCompany = Guid.NewGuid().ToString();
 

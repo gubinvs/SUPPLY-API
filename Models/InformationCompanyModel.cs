@@ -8,6 +8,7 @@ namespace SUPPLY_API
     /// <param name="FullNameCompany">Полное наименование компании</param>
     /// <param name="AbbreviatedNameCompany">Сокращенное наименование компании</param>
     /// <param name="InnCompany">ИНН компании</param>
+    /// <param name="roleCompany">Роль компании в системе</param>
     /// <param name="AddressCompany">Юридический адрес компании</param>
     public record InformationCompanyModel
     (
@@ -16,6 +17,7 @@ namespace SUPPLY_API
         string AbbreviatedNameCompany,
         long InnCompany,
         string AddressCompany,
+        string roleCompany,
         string GuidIdCollaborator
     );
 };

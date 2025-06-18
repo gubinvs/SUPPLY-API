@@ -62,6 +62,36 @@ namespace SUPPLY_API
                         _dbCompanyCollaborator.SaveChanges();
                     }
 
+                    // Теперь проверим данная компания является поставщиком или нет, 
+                    // если да то нужно добавить данние еще и в таблицу SupplyProvider
+                   if (model.roleCompany == "a5219e2b-12f3-490e-99f5-1be54c55cc6d")
+                    {
+                        using (var _SupplyProvider = new SupplyProviderContext())
+                        {
+                            // Проверка по ИНН
+                            var existing = _SupplyProvider.SupplyProvider
+                                .FirstOrDefault(p => p.InnProvider == Convert.ToString(model.InnCompany));
+
+                            if (existing == null)
+                            {
+                                var newProvider = new ProviderDb(
+                                    GuidIdCompany,
+                                    model.FullNameCompany,
+                                    Convert.ToString(model.InnCompany) // уже строка, как нужно
+                                );
+
+                                _SupplyProvider.SupplyProvider.Add(newProvider);
+                                _SupplyProvider.SaveChanges();
+                            }
+                            else
+                            {
+                                // Лог или предупреждение — поставщик с таким ИНН уже есть
+                                Console.WriteLine($"Компания с ИНН {model.InnCompany} уже зарегистрирована как поставщик.");
+                            }
+                        }
+                    }
+
+
                     // Возвращаем ответ
                     return Ok(new { message = "Данные о новой компании внесены в базу." });
 

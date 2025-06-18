@@ -51,7 +51,7 @@ namespace SUPPLY_API
                     // Подключаемся к другой базе данных, там где хранятся привязки пользователя к компании
 
                     // Если администратор привязку делать не нужно
-                    if (model.GuidIdCollaborator != "b5aff5b0-c3ac-4f1e-9467-fe13a14f6de3")
+                    if (model.GuidIdCollaborator != "12bc291f-fe13-41f6-ba03-c69c2f1d3a6e")
                     {
                         using (var _dbCompanyCollaborator = new CompanyCollaboratorContext())
                         {
@@ -67,33 +67,33 @@ namespace SUPPLY_API
                     }
 
                     // Теперь проверим данная компания является поставщиком или нет, 
-                        // если да то нужно добавить данние еще и в таблицу SupplyProvider
-                        if (model.roleCompany == "a5219e2b-12f3-490e-99f5-1be54c55cc6d")
+                    // если да то нужно добавить данние еще и в таблицу SupplyProvider
+                    if (model.RoleCompany?.Trim() == "a5219e2b-12f3-490e-99f5-1be54c55cc6d")
+                    {
+                        using (var _SupplyProvider = new SupplyProviderContext())
                         {
-                            using (var _SupplyProvider = new SupplyProviderContext())
+                            // Проверка по ИНН
+                            var existing = _SupplyProvider.SupplyProvider
+                                .FirstOrDefault(p => p.InnProvider == Convert.ToString(model.InnCompany));
+
+                            if (existing == null)
                             {
-                                // Проверка по ИНН
-                                var existing = _SupplyProvider.SupplyProvider
-                                    .FirstOrDefault(p => p.InnProvider == Convert.ToString(model.InnCompany));
+                                var newProvider = new ProviderDb(
+                                    GuidIdCompany,
+                                    model.AbbreviatedNameCompany,
+                                    Convert.ToString(model.InnCompany) // уже строка, как нужно
+                                );
 
-                                if (existing == null)
-                                {
-                                    var newProvider = new ProviderDb(
-                                        GuidIdCompany,
-                                        model.FullNameCompany,
-                                        Convert.ToString(model.InnCompany) // уже строка, как нужно
-                                    );
-
-                                    _SupplyProvider.SupplyProvider.Add(newProvider);
-                                    _SupplyProvider.SaveChanges();
-                                }
-                                else
-                                {
-                                    // Лог или предупреждение — поставщик с таким ИНН уже есть
-                                    Console.WriteLine($"Компания с ИНН {model.InnCompany} уже зарегистрирована как поставщик.");
-                                }
+                                _SupplyProvider.SupplyProvider.Add(newProvider);
+                                _SupplyProvider.SaveChanges();
+                            }
+                            else
+                            {
+                                // Лог или предупреждение — поставщик с таким ИНН уже есть
+                                Console.WriteLine($"Компания с ИНН {model.InnCompany} уже зарегистрирована как поставщик.");
                             }
                         }
+                    }
 
 
                     // Возвращаем ответ

@@ -67,7 +67,7 @@ namespace SUPPLY_API
                     }
 
                     // Теперь проверим данная компания является поставщиком или нет, 
-                    // если да то нужно добавить данние еще и в таблицу SupplyProvider
+                    // если да то нужно добавить данные еще и в таблицу SupplyProvider
                     if (model.RoleCompany?.Trim() == "a5219e2b-12f3-490e-99f5-1be54c55cc6d")
                     {
                         using (var _SupplyProvider = new SupplyProviderContext())
@@ -121,7 +121,15 @@ namespace SUPPLY_API
                         .Where(p => p.GuidIdCollaborator == model.GuidIdCollaborator && p.GuidIdCompany == model.GuidIdCompany)
                         .FirstOrDefault();
 
-                    //если такой зависимости нет, создаем ее
+
+
+                    // если такой зависимости нет, создаем ее
+                    // Проверяем зависимость на существующую компанию или на новую, если model.GuidIdCompany == nuul тогда новая если нет старая
+                    if (model.GuidIdCompany != null)
+                    {
+                        GuidIdCompany = model.GuidIdCompany;
+                    }
+                    
                     if (relationship == null)
                     {
                         // Формируем запрос в базу данных для записи данных
@@ -132,7 +140,7 @@ namespace SUPPLY_API
 
                         // Записали в базу данных
                         _dbCompanyCollaborator.SaveChanges();
- 
+
                         // Возвращаем ответ
                         return Ok(new { message = "Зависимость пользователя и компании установлена." });
 

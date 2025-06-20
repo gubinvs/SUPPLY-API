@@ -75,6 +75,7 @@ namespace SUPPLY_API.Controllers
                         return new
                         {
                             NameProvider = provider?.NameProvider ?? "Неизвестный поставщик",
+                            innProvider = provider?.InnProvider ?? "",
                             offer.PriceComponent,
                             offer.DeliveryTimeComponent,
                             offer.SaveDataPrice

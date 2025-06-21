@@ -68,6 +68,18 @@
           }
         }
       },
+      "Dadata/18.9.0": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "12.0.2"
+        },
+        "compile": {
+          "lib/net45/Dadata.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Dadata.dll": {}
+        }
+      },
       "DocumentFormat.OpenXml/2.16.0": {
         "type": "package",
         "dependencies": {
@@ -2795,6 +2807,18 @@
         "lib/netstandard2.1/ClosedXML.dll",
         "lib/netstandard2.1/ClosedXML.xml",
         "nuget-logo.png"
+      ]
+    },
+    "Dadata/18.9.0": {
+      "sha512": "AdH4KZSdnIsBaxsrT8UL6MOMvAD8YzsUkCLx7vyUPmFQO9bYb5BNli+Lsmud81diFFZWycTJkwqOOL8wt90TNw==",
+      "type": "package",
+      "path": "dadata/18.9.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "dadata.18.9.0.nupkg.sha512",
+        "dadata.nuspec",
+        "lib/net45/Dadata.dll"
       ]
     },
     "DocumentFormat.OpenXml/2.16.0": {
@@ -8525,6 +8549,7 @@
   "projectFileDependencyGroups": {
     "net9.0": [
       "ClosedXML >= 0.102.2",
+      "Dadata >= 1.6.0",
       "EPPlus >= 6.0.3",
       "IdentityModel >= 7.0.0",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 9.0.0",
@@ -8585,6 +8610,10 @@
           "ClosedXML": {
             "target": "Package",
             "version": "[0.102.2, )"
+          },
+          "Dadata": {
+            "target": "Package",
+            "version": "[1.6.0, )"
           },
           "EPPlus": {
             "target": "Package",
@@ -8657,5 +8686,27 @@
         "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1603",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "SUPPLY-API depends on Dadata (>= 1.6.0) but Dadata 1.6.0 was not found. Dadata 18.9.0 was resolved instead.",
+      "libraryId": "Dadata",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'Dadata 18.9.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net9.0'. This package may not be fully compatible with your project.",
+      "libraryId": "Dadata",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    }
+  ]
 }

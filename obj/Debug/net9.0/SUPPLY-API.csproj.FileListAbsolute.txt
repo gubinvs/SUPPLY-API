@@ -336,3 +336,4 @@
 /home/gubinvs/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.pdb
 /home/gubinvs/SUPPLY-API/obj/Debug/net9.0/SUPPLY-API.genruntimeconfig.cache
 /home/gubinvs/SUPPLY-API/obj/Debug/net9.0/ref/SUPPLY-API.dll
+/Users/vladimirgubin/SUPPLY-API/bin/Debug/net9.0/Dadata.dll

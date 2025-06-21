@@ -9,6 +9,7 @@
       "SUPPLY-API/1.0.0": {
         "dependencies": {
           "ClosedXML": "0.102.2",
+          "Dadata": "18.9.0",
           "EPPlus": "6.0.3",
           "IdentityModel": "7.0.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "9.0.0",
@@ -74,6 +75,17 @@
           "lib/netstandard2.1/ClosedXML.dll": {
             "assemblyVersion": "0.102.2.0",
             "fileVersion": "0.102.2.0"
+          }
+        }
+      },
+      "Dadata/18.9.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3"
+        },
+        "runtime": {
+          "lib/net45/Dadata.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
           }
         }
       },
@@ -1516,6 +1528,13 @@
       "sha512": "sha512-nsHmfPNPtWpr6vair857sQiN11OaFn80oiN2GIbTB1vDqnw9jhNMtlxS0/iYP/E+YGG5zLX2N6xeznuBuvezSQ==",
       "path": "closedxml/0.102.2",
       "hashPath": "closedxml.0.102.2.nupkg.sha512"
+    },
+    "Dadata/18.9.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-AdH4KZSdnIsBaxsrT8UL6MOMvAD8YzsUkCLx7vyUPmFQO9bYb5BNli+Lsmud81diFFZWycTJkwqOOL8wt90TNw==",
+      "path": "dadata/18.9.0",
+      "hashPath": "dadata.18.9.0.nupkg.sha512"
     },
     "DocumentFormat.OpenXml/2.16.0": {
       "type": "package",

@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using SUPPLY_API.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Dadata;
+using Dadata.Model;
 
-
-
-
-// Контроллер принимает данный методом пост по модели и заполняет базу данных новой компанией поставщиком
 namespace SUPPLY_API
 {
     [ApiController]
@@ -12,44 +15,79 @@ namespace SUPPLY_API
     public class AddCompanyProviderController : ControllerBase
     {
         private readonly ILogger<AddCompanyProviderController> _logger;
-        private readonly SupplyProviderContext _db;
+        private readonly SupplyProviderContext _dbProvider;
+        private readonly SupplyCompanyContext _dbCompany;
 
-        public AddCompanyProviderController(ILogger<AddCompanyProviderController> logger, SupplyProviderContext db)
+        public AddCompanyProviderController(
+            ILogger<AddCompanyProviderController> logger,
+            SupplyProviderContext dbProvider,
+            SupplyCompanyContext dbCompany)
         {
             _logger = logger;
-            _db = db;
+            _dbProvider = dbProvider ?? throw new ArgumentNullException(nameof(dbProvider));
+            _dbCompany = dbCompany ?? throw new ArgumentNullException(nameof(dbCompany));
         }
 
         [HttpPost]
         public async Task<IActionResult> AddSupplyProvider([FromBody] SupplyProviderModel model)
         {
+            if (model == null || model.InnCompany <= 0)
+            {
+                return BadRequest(new { message = "Некорректные данные: ИНН обязателен и должен быть положительным числом." });
+            }
+
             try
             {
-                // Проверка: существует ли компания поставщик с таким-же инн
-                var existing = await _db.SupplyProvider
-                    .AnyAsync(c => c.InnProvider == model.InnCompany.ToString());
+                string inn = model.InnCompany.ToString(); // используем строку для запроса в DaData
+
+                var existing = await _dbProvider.SupplyProvider
+                    .AnyAsync(c => c.InnProvider == inn);
 
                 if (existing)
                 {
                     return Conflict(new { message = "Компания с таким ИНН уже существует." });
                 }
 
-                // Создание нового поставщика
                 var newProvider = new ProviderDb
                 {
                     GuidIdProvider = Guid.NewGuid().ToString(),
                     NameProvider = model.AbbreviatedNameCompany,
-                    InnProvider = model.InnCompany.ToString()
+                    InnProvider = inn
                 };
 
-                _db.Add(newProvider);
-                await _db.SaveChangesAsync();
+                _dbProvider.Add(newProvider);
+                await _dbProvider.SaveChangesAsync();
+
+                // Получение данных из DaData
+                var token = TockenDataRuServise.Token;
+                
+                var dadata = new DaDataService(TockenDataRuServise.Token);
+                var party = await dadata.FindPartyAsync(inn);
+
+                if (party != null)
+                {
+                    var newCompany = new SupplyCompanyDb
+                    {
+                        GuidIdCompany = newProvider.GuidIdProvider,
+                        InnCompany = Convert.ToInt64(newProvider.InnProvider), // конвертируем в long
+                        FullNameCompany = party?.name?.full_with_opf ?? "_",
+                        AbbreviatedNameCompany = party?.name?.short_with_opf ?? "_",
+                        AddressCompany = party?.address?.value ?? "_"
+                    };
+
+                    _dbCompany.Add(newCompany);
+                    await _dbCompany.SaveChangesAsync();
+                }
+                else
+                {
+                    _logger.LogWarning("DaData не вернула данных для ИНН {Inn}", inn);
+                }
 
                 return Ok(new { message = "Поставщик успешно добавлен", id = newProvider.GuidIdProvider });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при добавлении компонента: {InnProvider}", model.InnCompany.ToString());
+                _logger.LogError(ex, "Ошибка при добавлении поставщика с ИНН {InnProvider}", model.InnCompany);
                 return StatusCode(500, new { message = "Произошла ошибка при обработке запроса." });
             }
         }

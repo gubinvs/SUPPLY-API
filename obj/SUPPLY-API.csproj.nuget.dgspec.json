@@ -48,6 +48,10 @@
               "target": "Package",
               "version": "[0.102.2, )"
             },
+            "Dadata": {
+              "target": "Package",
+              "version": "[1.6.0, )"
+            },
             "EPPlus": {
               "target": "Package",
               "version": "[6.0.3, )"

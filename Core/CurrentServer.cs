@@ -5,16 +5,16 @@ namespace SUPPLY_API
     public static class CurrentServer
     {
 
-        public static string ServerAddress = "http://localhost:8080"; // Локальный сервер для тренировок
+        //public static string ServerAddress = "http://localhost:8080"; // Локальный сервер для тренировок
 
         // Сервер на котором крутиться frontend
-        public static string ServerAddressFrontend = "http://localhost:3000";  // Локальный сервер для тренировок
+        //public static string ServerAddressFrontend = "http://localhost:3000";  // Локальный сервер для тренировок
 
 
-        // Адрес на котором ледит этот API сервер
-        //public static string ServerAddress = "http://31.129.97.48:1040"; // Боевой сервер
+        // Адрес на котором лежит этот API сервер
+        public static string ServerAddress = "http://31.129.97.48:1030"; // Боевой сервер api
 
         // Сервер на котором крутиться frontend
-        // public static string ServerAddressFrontend = "http://31.129.97.48:1040";  // Боевой сервер
+        public static string ServerAddressFrontend = "http://31.129.97.48:1040";  // Боевой сервер frond
     }
 }

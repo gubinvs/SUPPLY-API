@@ -16,23 +16,35 @@ namespace SUPPLY_API.Controllers
         // База данных с информацией о комплектующих
         private readonly SupplyComponentContext _db;
 
-        // База данных с производителями
+        // База данных с зависимостями по производителям
         private readonly ManufacturerComponentContext _dbManufact;
 
-        // База данных с единицами измерения
+        // База данных с зависимостями по единицам измерения
         private readonly UnitMeasurementComponentContext _dbUm;
+
+        // База данных с наименованиями производителей
+        private readonly SupplyManufacturerContext _dbManufactName;
+
+        // База данных с наименованиями единиц измерения
+        private readonly SupplyUnitMeasurementContext _dbUmName;
 
         public ReturnListDataComponentController(
             ILogger<AddComponentController> logger,
             SupplyComponentContext db,
             UnitMeasurementComponentContext dbUm,
-            ManufacturerComponentContext dbManufact
+            ManufacturerComponentContext dbManufact,
+            SupplyUnitMeasurementContext dbUmName,
+            SupplyManufacturerContext dbManufactName
+
         )
         {
             _logger = logger;
             _db = db;
             _dbUm = dbUm;
             _dbManufact = dbManufact;
+            _dbUmName = dbUmName;
+            _dbManufactName = dbManufactName;
+
         }
 
         [HttpGet]
@@ -40,35 +52,38 @@ namespace SUPPLY_API.Controllers
         {
             try
             {
-                // Cобираем все данные из таблицы
-                var component = await _db.SupplyComponent
-                    .ToListAsync();
+                var components = await _db.SupplyComponent.ToListAsync();
+                var manufacturerLinks = await _dbManufact.ManufacturerComponent.ToListAsync();
+                var unitMeasurementLinks = await _dbUm.UnitMeasurementComponent.ToListAsync();
+                var manufacturerNames = await _dbManufactName.SupplyManufacturer.ToListAsync();
+                var unitMeasurementNames = await _dbUmName.SupplyUnitMeasurement.ToListAsync();
 
-                // Собираем данные о привязках guidId производителя
-                var manufacturer = await _dbManufact.ManufacturerComponent
-                    .ToListAsync();
+                var enrichedComponents = components.Select(c =>
+                {
+                    // Найдём привязку производителя по компоненту
+                    var manufactLink = manufacturerLinks.FirstOrDefault(m => m.GuidIdComponent == c.GuidIdComponent);
+                    var manufactName = manufactLink != null
+                        ? manufacturerNames.FirstOrDefault(mn => mn.GuidIdManufacturer == manufactLink.GuidIdManufacturer)?.NameManufacturer
+                        : null;
 
-                // Собираем данные о привязках guidId единиц измерений
-                var measurement = await _dbUm.UnitMeasurementComponent
-                    .ToListAsync();
+                    // Найдём привязку единицы измерения по компоненту
+                    var umLink = unitMeasurementLinks.FirstOrDefault(u => u.GuidIdComponent == c.GuidIdComponent);
+                    var umName = umLink != null
+                        ? unitMeasurementNames.FirstOrDefault(un => un.GuidIdUnitMeasurement == umLink.GuidIdUnitMeasurement)?.NameUnitMeasurement
+                        : null;
 
-                // Подключаемся к базе данных и сопоставляем guidId и наименование производителя
+                    return new
+                    {
+                        c.Id,
+                        c.GuidIdComponent,
+                        c.VendorCodeComponent,
+                        c.NameComponent,
+                        ManufacturerName = manufactName,
+                        UnitMeasurementName = umName
+                    };
+                }).ToList();
 
-
-                // Подключаемся к базе данных и сопоставляем guidId единицы измерения и наименования ед. измерения
-
-
-
-
-                // Теперь перебираем данные и при совпадении GuidIdComponent дописываем данные в массив про производителя
-                // Ну и про единицу измерения
-
-
-
-
-
-
-                return Ok(new { component });
+                return Ok(enrichedComponents);
             }
             catch (Exception ex)
             {

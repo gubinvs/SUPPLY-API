@@ -11,7 +11,7 @@ namespace SUPPLY_API
         /// <summary>
         /// Таблица с данными о пользователях системы
         /// </summary>
-        public DbSet<ManufacturerComponentContext> ManufacturerComponent { get; set; } = null!;
+        public DbSet<ManufacturerComponentDb> ManufacturerComponent { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

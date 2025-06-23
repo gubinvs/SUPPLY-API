@@ -13,19 +13,27 @@ namespace SUPPLY_API
 
         public string? NameComponent { get; set; }
 
+        // Производитель
+        public string? NameManufacturer { get; set; }
+
+        // Единица измерения
+        public string? UnitMeasurement { get; set; }
+
 
         // Пустой конструктор для EF
         public ComponentDb() { }
 
         public ComponentDb
-                                (   string guid,
+                                (string guid,
                                     string vendorCode,
-                                    string nameComponent
+                                    string nameComponent,
+                                    string nameManufacturer
                                 )
         {
             GuidIdComponent = guid;
             VendorCodeComponent = vendorCode;
             NameComponent = nameComponent;
+            NameManufacturer = nameManufacturer;
 
         }
         

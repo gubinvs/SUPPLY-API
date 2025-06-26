@@ -2,22 +2,25 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-
+using Microsoft.Extensions.Options;
+using SUPPLY_API;
 
 public class DaDataService
 {
     private readonly HttpClient _httpClient;
     private readonly string _token;
 
-    public DaDataService(string token)
+    public DaDataService(HttpClient httpClient, IOptions<RuTokenSettings> tokenSettings)
     {
-        _httpClient = new HttpClient();
-        _token = token;
+        _httpClient = httpClient;
+        _token = tokenSettings.Value.Token;
     }
 
     public async Task<PartyData?> FindPartyAsync(string inn)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/party");
+        var request = new HttpRequestMessage(
+            HttpMethod.Post,
+            "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/party");
 
         request.Headers.Authorization = new AuthenticationHeaderValue("Token", _token);
         request.Content = new StringContent(
@@ -35,6 +38,7 @@ public class DaDataService
         return result?.suggestions?.FirstOrDefault()?.data;
     }
 }
+
 
 // Вспомогательные классы
 public class DaDataPartyResponse

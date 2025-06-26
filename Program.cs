@@ -26,6 +26,9 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.Configure<RuTokenSettings>(builder.Configuration.GetSection("RuTokenSettings"));
+builder.Services.AddHttpClient<DaDataService>(); // HttpClient через DI
+
 
 // === Фоновые службы ===
 builder.Services.AddHostedService<EmailCleanupHostedService>();

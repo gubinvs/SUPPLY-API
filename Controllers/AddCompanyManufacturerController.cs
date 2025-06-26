@@ -49,7 +49,7 @@ namespace SUPPLY_API
                     NameManufacturer = name
                 };
 
-                Console.WriteLine(newManufacturer.NameManufacturer);
+                
 
                 _dbManuf.Add(newManufacturer);
                 await _dbManuf.SaveChangesAsync();

@@ -4,37 +4,40 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
 
-/// <summary>
-/// Класс решает задачу по генерации токенов
-/// </summary>
-public class TokenService
+namespace SUPPLY_API
 {
-    private const string SecretKey = "YourSecureKeyHereMustBeLongEnough"; // Совпадает с ключом в Program.cs
-    private const int TokenExpiryMinutes = 14400; // Срок действия токена 24 часа
-
-    public string GenerateToken(string email, string role)
+    /// <summary>
+    /// Класс решает задачу по генерации токенов
+    /// </summary>
+    public class TokenService
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(SecretKey);
-        if (key.Length < 32) // 32 байта = 256 бит
-        {
-            throw new ArgumentException("Key must be at least 256 bits long.");
-        }
+        private const string SecretKey = "YourSecureKeyHereMustBeLongEnough"; // Совпадает с ключом в Program.cs
+        private const int TokenExpiryMinutes = 14400; // Срок действия токена 24 часа
 
-        var tokenDescriptor = new SecurityTokenDescriptor
+        public string GenerateToken(string email, string role)
         {
-            Subject = new ClaimsIdentity(new[]
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(SecretKey);
+            if (key.Length < 32) // 32 байта = 256 бит
             {
+                throw new ArgumentException("Key must be at least 256 bits long.");
+            }
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
             new Claim(ClaimTypes.Email, email),
             new Claim(ClaimTypes.Role, role),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // Уникальный идентификатор
         }),
-            Expires = DateTime.UtcNow.AddMinutes(TokenExpiryMinutes),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-        };
+                Expires = DateTime.UtcNow.AddMinutes(TokenExpiryMinutes),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
 
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
     }
-
 }

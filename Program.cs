@@ -40,6 +40,8 @@ builder.Services.AddDbContext<UnitMeasurementComponentContext>();
 builder.Services.AddDbContext<ManufacturerComponentContext>();
 builder.Services.AddDbContext<SupplyManufacturerContext>();
 builder.Services.AddDbContext<SupplyUnitMeasurementContext>();
+builder.Services.AddHostedService<DuplicateCleanupService>(); // Удаляет раз в сутки дубли номенклатуры
+
 
 
 

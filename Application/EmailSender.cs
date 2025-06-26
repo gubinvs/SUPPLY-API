@@ -14,10 +14,10 @@ namespace SUPPLY_API {
         //public EmailSender(string smtpServer, int port, string fromEmail, string password)
         public EmailSender()
         {
-            this.smtpServer = EmailSenderEncomponentConnect.smtpServer;
-            this.port = EmailSenderEncomponentConnect.port;
-            this.fromEmail = EmailSenderEncomponentConnect.fromEmail;
-            this.password = EmailSenderEncomponentConnect.password;
+            this.smtpServer = EmailSenderSistemautorConnect.smtpServer;
+            this.port = EmailSenderSistemautorConnect.port;
+            this.fromEmail = EmailSenderSistemautorConnect.fromEmail;
+            this.password = EmailSenderSistemautorConnect.password;
         }
 
         /// <summary>

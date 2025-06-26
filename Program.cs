@@ -30,19 +30,72 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHostedService<EmailCleanupHostedService>();
-builder.Services.AddDbContext<SupplyComponentContext>();
-builder.Services.AddDbContext<SupplyPriceComponentContext>();
-builder.Services.AddDbContext<SupplyProviderContext>();
-builder.Services.AddDbContext<CompanyCollaboratorContext>();
-builder.Services.AddDbContext<SupplyCompanyContext>();
-builder.Services.AddDbContext<DeliveryAddressContext>();
-builder.Services.AddDbContext<UnitMeasurementComponentContext>();
-builder.Services.AddDbContext<ManufacturerComponentContext>();
-builder.Services.AddDbContext<SupplyManufacturerContext>();
-builder.Services.AddDbContext<SupplyUnitMeasurementContext>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddHostedService<DuplicateCleanupService>(); // Удаляет раз в сутки дубли номенклатуры
 
 
+builder.Services.AddDbContext<UnitMeasurementComponentContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25)));
+});
+
+builder.Services.AddDbContext<SupplyUnitMeasurementContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25)));
+});
+
+builder.Services.AddDbContext<SupplyProviderContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25)));
+});
+
+builder.Services.AddDbContext<SupplyPriceComponentContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25)));
+});
+
+builder.Services.AddDbContext<SupplyManufacturerContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25)));
+});
+
+builder.Services.AddDbContext<SupplyComponentContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25)));
+});
+
+builder.Services.AddDbContext<SupplyCompanyContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25)));
+});
+
+builder.Services.AddDbContext<CollaboratorSystemContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25)));
+});
+builder.Services.AddDbContext<CompanyCollaboratorContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25)));
+});
+builder.Services.AddDbContext<DeliveryAddressContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25)));
+});
+builder.Services.AddDbContext<ManufacturerComponentContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25)));
+});
 
 
 

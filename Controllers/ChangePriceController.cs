@@ -22,7 +22,7 @@ namespace SUPPLY_API.Controllers
     public class ChangePriceController : ControllerBase
     {
 
-        private readonly ILogger<AddComponentController> _logger;
+        private readonly ILogger<ChangePriceController> _logger;
 
         // База данных с информацией о комплектующих
         private readonly SupplyComponentContext _db;
@@ -34,7 +34,7 @@ namespace SUPPLY_API.Controllers
         private readonly SupplyProviderContext _dbProvider;
 
         public ChangePriceController(
-            ILogger<AddComponentController> logger,
+            ILogger<ChangePriceController> logger,
             SupplyComponentContext db,
             SupplyPriceComponentContext dbPrice,
             SupplyProviderContext dbProvider

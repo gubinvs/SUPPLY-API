@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace SUPPLY_API
 {
@@ -6,12 +7,33 @@ namespace SUPPLY_API
     [Route("api/[controller]")]
     public class ActivationEmailController : ControllerBase
     {
+
+        private readonly ILogger<ActivationEmailController> _logger;
+        private readonly CollaboratorSystemContext _db;
+        private readonly EmailSender _emailSender;
+        private readonly CurrentServer _serverAddresses;
+
+
+        public ActivationEmailController(
+            ILogger<ActivationEmailController> logger,
+            CollaboratorSystemContext db,
+            EmailSender emailSender,
+            IOptions<CurrentServer> serverAddresses)
+            
+        {
+            _logger = logger;
+            _db = db;
+            _emailSender = emailSender;
+            _serverAddresses = serverAddresses.Value;
+        }
+
+
         [HttpPost]
         public IActionResult ResendActivationEmail([FromBody] ActivationEmailModel model)
         {
-            using (var db = new CollaboratorSystemContext())
-            {
-                var user = db.CollaboratorSystem.FirstOrDefault(p => p.EmailCollaborator == model.Email);
+            
+            
+                var user = _db.CollaboratorSystem.FirstOrDefault(p => p.EmailCollaborator == model.Email);
 
                 if (user == null)
                 {
@@ -27,7 +49,7 @@ namespace SUPPLY_API
                 if (string.IsNullOrWhiteSpace(user.GuidIdCollaborator))
                 {
                     user.GuidIdCollaborator = Guid.NewGuid().ToString();
-                    db.SaveChanges();
+                    _db.SaveChanges();
                 }
 
                 if (string.IsNullOrWhiteSpace(user.EmailCollaborator))
@@ -40,14 +62,14 @@ namespace SUPPLY_API
 
                 return Ok(new { message = "Проверьте ваш email для подтверждения регистрации." });
             }
-        }
+        
 
         [HttpGet("confirm/{guid}")]
         public IActionResult ConfirmEmail(string guid)
         {
-            using (var db = new CollaboratorSystemContext())
-            {
-                var user = db.CollaboratorSystem.FirstOrDefault(p => p.GuidIdCollaborator == guid);
+    
+            
+                var user = _db.CollaboratorSystem.FirstOrDefault(p => p.GuidIdCollaborator == guid);
 
                 if (user == null)
                 {
@@ -56,22 +78,22 @@ namespace SUPPLY_API
 
                 user.ActivationEmailCollaborator = true;
                 user.GuidIdCollaborator = null; // обнуляем GUID после подтверждения
-                db.SaveChanges();
+                _db.SaveChanges();
 
                 // return Ok(new { message = "Email подтверждён успешно!" });
                 // Перенаправляем на страницу успеха
-                return Redirect($"{CurrentServer.ServerAddressFrontend}");
-            }
+                return Redirect($"{_serverAddresses.ServerAddressFrontend}");
+            
         }
 
         private void SendConfirmationEmail(string email, string guid)
         {
-            var confirmationLink = $"{CurrentServer.ServerAddress}/api/activationemail/confirm/{guid}";
+            var confirmationLink = $"{_serverAddresses.ServerAddressApi}/api/activationemail/confirm/{guid}";
             var subject = "Подтверждение регистрации";
             var body = $"Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке:\n\n{confirmationLink}";
 
-            var emailSender = new EmailSender();
-            emailSender.SendEmail(email, subject, body);
+            _emailSender.SendEmail(email, subject, body);
+
         }
     }
 

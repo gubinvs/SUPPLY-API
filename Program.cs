@@ -30,6 +30,16 @@ builder.Services.Configure<RuTokenSettings>(builder.Configuration.GetSection("Ru
 builder.Services.AddScoped<SomeServiceUsingToken>();
 builder.Configuration["RuTokenSettings:Token"] = Environment.GetEnvironmentVariable("RU_SERVICE_TOKEN");
 builder.Services.AddHttpClient<DaDataService>();
+builder.Services.AddScoped<CollaboratorSystemContext>();
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<EmailSender>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<EmailSender>();
+builder.Services.Configure<CurrentServer>(
+builder.Configuration.GetSection("ServerAddresses"));
+
+
+
 
 
 

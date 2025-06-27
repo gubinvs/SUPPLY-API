@@ -30,6 +30,12 @@ namespace SUPPLY_API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComponent([FromBody] AddComponentModel model)
         {
+
+            if (model.VendorCodeComponent.Contains("/"))
+            {
+                return BadRequest(new { message = "Артикул не должен содержать символ '/'." });
+            }
+            
             try
             {
                 var existing = await _db.SupplyComponent
@@ -173,11 +179,4 @@ namespace SUPPLY_API.Controllers
             }
         }
     }
-
-    public record AddComponentModel(
-        string VendorCodeComponent,
-        string NameComponent,
-        string guidIdManufacturer,
-        string guidIdUnitMeasurement
-    );
 }

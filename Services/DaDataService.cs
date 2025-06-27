@@ -46,10 +46,7 @@ namespace SUPPLY_API
 
 
     // Вспомогательные классы
-    public class DaDataPartyResponse
-    {
-        public List<DaDataSuggestion>? suggestions { get; set; }
-    }
+
 
     public class DaDataSuggestion
     {

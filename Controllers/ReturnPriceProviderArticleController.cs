@@ -18,70 +18,65 @@ namespace SUPPLY_API.Controllers
     public class ReturnPriceProviderArticleController : ControllerBase
     {
         private readonly ILogger<AddComponentController> _logger;
-
-        // База данных с информацией о комплектующих
         private readonly SupplyComponentContext _db;
-
-        // База данных с ценами и сроками
         private readonly SupplyPriceComponentContext _dbPrice;
-
-        // База данных с информацией о поставщиках
         private readonly SupplyProviderContext _dbProvider;
+        private readonly ManufacturerComponentContext _dbManufact;
+        private readonly UnitMeasurementComponentContext _dbUnit;
+        private readonly SupplyManufacturerContext _dbSupplyManufact;
+        private readonly SupplyUnitMeasurementContext _dbSupplyUnit;
 
         public ReturnPriceProviderArticleController(
-            ILogger<AddComponentController> logger,
-            SupplyComponentContext db,
-            SupplyPriceComponentContext dbPrice,
-            SupplyProviderContext dbProvider
-
+                ILogger<AddComponentController> logger,
+                SupplyComponentContext db,
+                SupplyPriceComponentContext dbPrice,
+                SupplyProviderContext dbProvider,
+                ManufacturerComponentContext dbManufact,
+                SupplyManufacturerContext dbSupplyManufact,
+                UnitMeasurementComponentContext dbUnit,
+                SupplyUnitMeasurementContext dbSupplyUnit
             )
         {
             _logger = logger;
             _db = db;
             _dbPrice = dbPrice;
             _dbProvider = dbProvider;
+            _dbManufact = dbManufact;
+            _dbSupplyManufact = dbSupplyManufact;
+            _dbUnit = dbUnit;
+            _dbSupplyUnit = dbSupplyUnit;
         }
+
 
         [HttpGet("{article}")]
         public async Task<IActionResult> ReadComponent(string article)
         {
             try
             {
-                var existing = await _db.SupplyComponent
-                    .AnyAsync(c => c.VendorCodeComponent == article);
+                var component = await _db.SupplyComponent
+                    .Where(c => c.VendorCodeComponent == article)
+                    .Select(c => new 
+                    {
+                        c.GuidIdComponent,
+                        c.NameComponent
+                    })
+                    .FirstOrDefaultAsync();
 
-                if (!existing)
+                if (component == null)
                 {
-                    return Conflict(new { message = $"Компонент с артикулом {article} отсутствует в базе данных" });
+                    return NotFound(new { message = $"Компонент с артикулом {article} отсутствует в базе данных" });
                 }
 
-                // На основании артикула достали GuidIdComponent
-                var guidIdComponent = await _db.SupplyComponent
-                    .Where(c => c.VendorCodeComponent == article)
-                    .Select(c => c.GuidIdComponent)
-                    .FirstOrDefaultAsync();
-
-                // На основании артикула достали Наименование компонента
-                var nameComponent = await _db.SupplyComponent
-                    .Where(c => c.VendorCodeComponent == article)
-                    .Select(c => c.NameComponent)
-                    .FirstOrDefaultAsync();
-
-                // Загрузили все данные о ценах и сроках по GuidIdComponent
                 var offers = await _dbPrice.PriceComponent
-                    .Where(p => p.GuidIdComponent == guidIdComponent)
+                    .Where(p => p.GuidIdComponent == component.GuidIdComponent)
                     .ToListAsync();
 
-                // Выбрали все GuidIdProvider
                 var providerIds = offers.Select(o => o.GuidIdProvider).Distinct().ToList();
 
-                // Достали названия компаний по GuidIdProvider
                 var providers = await _dbProvider.SupplyProvider
                     .Where(pr => providerIds.Contains(pr.GuidIdProvider))
                     .ToListAsync();
 
-
-                // Сделали выборку по GuidIdProvider
                 var offersWithNames = offers.Select(offer =>
                 {
                     var provider = providers.FirstOrDefault(p => p.GuidIdProvider == offer.GuidIdProvider);
@@ -94,12 +89,39 @@ namespace SUPPLY_API.Controllers
                     };
                 }).ToList();
 
+                var manufacturerComponent = await _dbManufact.ManufacturerComponent
+                    .Where(c => c.GuidIdComponent == component.GuidIdComponent)
+                    .Select(c => c.GuidIdManufacturer)
+                    .FirstOrDefaultAsync();
+
+                if (string.IsNullOrEmpty(manufacturerComponent))
+                    return NotFound("Производитель не найден.");
+
+                var manufacturerName = await _dbSupplyManufact.SupplyManufacturer
+                    .Where(sm => sm.GuidIdManufacturer == manufacturerComponent)
+                    .Select(sm => sm.NameManufacturer)
+                    .FirstOrDefaultAsync();
+
+                var unitComponent = await _dbUnit.UnitMeasurementComponent
+                    .Where(c => c.GuidIdComponent == component.GuidIdComponent)
+                    .Select(c => c.GuidIdUnitMeasurement)
+                    .FirstOrDefaultAsync();
+
+                if (string.IsNullOrEmpty(unitComponent))
+                    return NotFound("Единица измерения не найдена.");
+
+                var unitName = await _dbSupplyUnit.SupplyUnitMeasurement
+                    .Where(su => su.GuidIdUnitMeasurement == unitComponent)
+                    .Select(su => su.NameUnitMeasurement)
+                    .FirstOrDefaultAsync();
 
                 return Ok(new
                 {
                     Article = article,
-                    NameComponent = nameComponent,
-                    Offers = offersWithNames
+                    NameComponent = component.NameComponent,
+                    Offers = offersWithNames,
+                    Manufacturer = manufacturerName,
+                    Unit = unitName
                 });
             }
             catch (Exception ex)
@@ -108,6 +130,7 @@ namespace SUPPLY_API.Controllers
                 return StatusCode(500, new { message = "Произошла ошибка при обработке запроса." });
             }
         }
+
     }
 
 }

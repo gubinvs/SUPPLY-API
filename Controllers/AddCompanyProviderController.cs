@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using SUPPLY_API;
 
 namespace SUPPLY_API
@@ -11,15 +12,22 @@ namespace SUPPLY_API
         private readonly ILogger<AddCompanyProviderController> _logger;
         private readonly SupplyProviderContext _dbProvider;
         private readonly SupplyCompanyContext _dbCompany;
+        private readonly string _token;
+        private readonly DaDataService _daDataService;
+
 
         public AddCompanyProviderController(
             ILogger<AddCompanyProviderController> logger,
             SupplyProviderContext dbProvider,
-            SupplyCompanyContext dbCompany)
+            SupplyCompanyContext dbCompany,
+            IOptions<RuTokenSettings> tokenOptions,
+            DaDataService daDataService)
         {
             _logger = logger;
             _dbProvider = dbProvider ?? throw new ArgumentNullException(nameof(dbProvider));
             _dbCompany = dbCompany ?? throw new ArgumentNullException(nameof(dbCompany));
+            _token = tokenOptions.Value.Token;
+            _daDataService = daDataService;
         }
 
         [HttpPost]
@@ -53,10 +61,7 @@ namespace SUPPLY_API
                 await _dbProvider.SaveChangesAsync();
 
                 // Получение данных из DaData
-                var token = TockenDataRuServise.Token;
-                
-                var dadata = new DaDataService(TockenDataRuServise.Token);
-                var party = await dadata.FindPartyAsync(inn);
+                var party = await _daDataService.FindPartyAsync(inn);
 
                 if (party != null)
                 {

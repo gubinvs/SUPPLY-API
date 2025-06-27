@@ -1,5 +1,4 @@
 
-
 namespace SUPPLY_API
 { 
     public class DaDataPartyResponse

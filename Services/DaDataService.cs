@@ -43,31 +43,4 @@ namespace SUPPLY_API
             return result?.suggestions?.FirstOrDefault()?.data;
         }
     }
-
-
-    // Вспомогательные классы
-
-
-    public class DaDataSuggestion
-    {
-        public PartyData? data { get; set; }
-    }
-
-    public class PartyData
-    {
-        public string? inn { get; set; }
-        public NameData? name { get; set; }
-        public AddressData? address { get; set; }
-    }
-
-    public class NameData
-    {
-        public string? full_with_opf { get; set; }
-        public string? short_with_opf { get; set; }
-    }
-
-    public class AddressData
-    {
-        public string? value { get; set; }
-    }
 }

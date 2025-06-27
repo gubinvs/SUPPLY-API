@@ -32,11 +32,16 @@ builder.Configuration["RuTokenSettings:Token"] = Environment.GetEnvironmentVaria
 builder.Services.AddHttpClient<DaDataService>();
 builder.Services.AddScoped<CollaboratorSystemContext>();
 builder.Services.AddScoped<TokenService>();
-builder.Services.AddScoped<EmailSender>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<EmailSender>();
 builder.Services.AddTransient<EmailSender>();
 builder.Services.Configure<CurrentServer>(
 builder.Configuration.GetSection("ServerAddresses"));
+builder.Services.Configure<RuTokenSettings>(
+builder.Configuration.GetSection("RuTokenSettings"));
+builder.Services.Configure<RuTokenSettings>(
+    builder.Configuration.GetSection("RuTokenSettings"));
+builder.Services.AddHttpClient<DaDataService>();
 
 
 

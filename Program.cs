@@ -27,7 +27,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.Configure<RuTokenSettings>(builder.Configuration.GetSection("RuTokenSettings"));
-builder.Services.AddHttpClient<DaDataService>(); // HttpClient через DI
+builder.Services.AddScoped<SomeServiceUsingToken>();
+builder.Configuration["RuTokenSettings:Token"] = Environment.GetEnvironmentVariable("RU_SERVICE_TOKEN");
+builder.Services.AddHttpClient<DaDataService>();
+
 
 
 // === Фоновые службы ===
@@ -114,4 +117,3 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.Run();
-

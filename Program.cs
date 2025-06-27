@@ -40,11 +40,8 @@ builder.Configuration.GetSection("ServerAddresses"));
 builder.Services.Configure<RuTokenSettings>(
 builder.Configuration.GetSection("RuTokenSettings"));
 builder.Services.Configure<RuTokenSettings>(
-    builder.Configuration.GetSection("RuTokenSettings"));
+builder.Configuration.GetSection("RuTokenSettings"));
 builder.Services.AddHttpClient<DaDataService>();
-
-
-
 
 
 

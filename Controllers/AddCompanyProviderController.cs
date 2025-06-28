@@ -62,15 +62,15 @@ namespace SUPPLY_API
 
                 // Получение данных из DaData
                 var party = await _daDataService.FindPartyAsync(inn);
-
+                
                 if (party != null)
                 {
                     var newCompany = new SupplyCompanyDb
                     {
                         GuidIdCompany = newProvider.GuidIdProvider,
-                        InnCompany = Convert.ToInt64(newProvider.InnProvider), // конвертируем в long
                         FullNameCompany = party?.name?.full_with_opf ?? "_",
                         AbbreviatedNameCompany = party?.name?.short_with_opf ?? "_",
+                        InnCompany = Convert.ToInt64(newProvider.InnProvider), // конвертируем в long
                         AddressCompany = party?.address?.value ?? "_"
                     };
 

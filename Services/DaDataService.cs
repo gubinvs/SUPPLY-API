@@ -13,12 +13,15 @@ namespace SUPPLY_API
         /// </summary>
         private readonly HttpClient _httpClient;
         private readonly string _token;
- 
+
 
         public DaDataService(HttpClient httpClient, IOptions<RuTokenSettings> tokenSettings)
         {
             _httpClient = httpClient;
             _token = tokenSettings.Value.Token;
+
+            if (string.IsNullOrWhiteSpace(_token))
+                throw new Exception("DaData token is missing!");
         }
 
         public async Task<PartyData?> FindPartyAsync(string inn)

@@ -8,6 +8,19 @@ using SUPPLY_API.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// --- Загрузка токена RuTokenSettings:Token с переопределением из переменной окружения ---
+var ruTokenFromConfig = builder.Configuration["RuTokenSettings:Token"];
+var ruTokenFromEnv = Environment.GetEnvironmentVariable("RU_SERVICE_TOKEN");
+
+if (!string.IsNullOrEmpty(ruTokenFromEnv))
+{
+    builder.Configuration["RuTokenSettings:Token"] = ruTokenFromEnv;
+}
+else if (string.IsNullOrEmpty(ruTokenFromConfig))
+{
+    throw new Exception("RU_SERVICE_TOKEN не найден ни в конфиге, ни в переменных окружения!");
+}
+
 // === Настройка защиты данных ===
 var keysDirectory = new DirectoryInfo("/app/keys");
 var dataProtectionBuilder = builder.Services.AddDataProtection().PersistKeysToFileSystem(keysDirectory);
@@ -26,34 +39,28 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Конфигурация RuTokenSettings
 builder.Services.Configure<RuTokenSettings>(builder.Configuration.GetSection("RuTokenSettings"));
-builder.Services.AddScoped<SomeServiceUsingToken>();
-builder.Configuration["RuTokenSettings:Token"] = Environment.GetEnvironmentVariable("RU_SERVICE_TOKEN");
+
+// Регистрируем сервисы
 builder.Services.AddHttpClient<DaDataService>();
+builder.Services.AddScoped<SomeServiceUsingToken>();
 builder.Services.AddScoped<CollaboratorSystemContext>();
 builder.Services.AddScoped<TokenService>();
+
+// Email настройки
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<EmailSender>();
-builder.Services.AddTransient<EmailSender>();
-builder.Services.Configure<CurrentServer>(
-builder.Configuration.GetSection("ServerAddresses"));
-builder.Services.Configure<RuTokenSettings>(
-builder.Configuration.GetSection("RuTokenSettings"));
-builder.Services.Configure<RuTokenSettings>(
-builder.Configuration.GetSection("RuTokenSettings"));
-builder.Services.AddHttpClient<DaDataService>();
 
-
+// Прочее
+builder.Services.Configure<CurrentServer>(builder.Configuration.GetSection("ServerAddresses"));
 
 // === Фоновые службы ===
 builder.Services.AddHostedService<EmailCleanupHostedService>();
 builder.Services.AddHostedService<DuplicateCleanupService>();
 
-// === Email настройки ===
-builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-builder.Services.AddScoped<EmailSender>();
-
-// === Строка подключения (одна на все контексты) ===
+// === Строка подключения ===
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
 
@@ -71,7 +78,7 @@ builder.Services.AddDbContext<DeliveryAddressContext>(options => options.UseMySq
 builder.Services.AddDbContext<ManufacturerComponentContext>(options => options.UseMySql(connectionString, serverVersion));
 
 // === JWT-аутентификация ===
-var secretKey = "YourSecureKeyHereMustBeLongEnough"; // Вынести в конфигурацию!
+var secretKey = "YourSecureKeyHereMustBeLongEnough"; // Лучше хранить в конфигурации
 var key = Encoding.UTF8.GetBytes(secretKey);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -114,7 +121,7 @@ app.UseRouting();
 
 app.UseCors("AllowAll");
 
-app.UseAuthentication(); // <-- Обязательно до Authorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())

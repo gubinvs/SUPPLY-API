@@ -6,10 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Microsoft.EntityFrameworkCore;
-using MySql.Data.MySqlClient;
 using Microsoft.Extensions.DependencyInjection;  // Добавлено для IServiceScopeFactory
 using System.Net.Http;
 using System.Net.Http.Json;
+using MySqlConnector;
 
 namespace SUPPLY_API
 {
@@ -47,11 +47,12 @@ namespace SUPPLY_API
             _configuration = configuration;
             _scopeFactory = scopeFactory;
 
-            _connectionHandy = _configuration["ConnectionStringsHandy:DefaultConnection"]
-                ?? throw new InvalidOperationException("ConnectionStringsHandy:DefaultConnection is not configured.");
+            _connectionEncomponent = _configuration["ConnectionStrings:AppDatabase"]
+                 ?? throw new InvalidOperationException("ConnectionStrings:AppDatabase is not configured.");
 
-            _connectionEncomponent = _configuration["ConnectionStrings:DefaultConnection"]
-                ?? throw new InvalidOperationException("ConnectionStrings:DefaultConnection is not configured.");
+            _connectionHandy = _configuration["ConnectionStrings:HandyDatabase"]
+                ?? throw new InvalidOperationException("ConnectionStrings:HandyDatabase is not configured.");
+
 
             _currenServerApi = _configuration["ServerAddresses:ServerAddressApi"]
                 ?? throw new InvalidOperationException("ServerAddressApi is not configured.");

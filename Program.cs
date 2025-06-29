@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using SUPPLY_API;
 using SUPPLY_API.Models;
+using MySql.EntityFrameworkCore.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- Правильная загрузка токена RuTokenSettings:Token ---
+// --- Загрузка токена RuTokenSettings:Token ---
 var ruTokenFromEnv = Environment.GetEnvironmentVariable("RU_SERVICE_TOKEN");
 if (!string.IsNullOrEmpty(ruTokenFromEnv))
 {
@@ -19,8 +20,9 @@ else if (string.IsNullOrEmpty(builder.Configuration["RuTokenSettings:Token"]))
     throw new Exception("RU_SERVICE_TOKEN не найден ни в конфиге, ни в переменных окружения!");
 }
 
-// --- Настройка защиты данных ---
-var keysDirectory = new DirectoryInfo("/app/keys");
+// --- Настройка DataProtection ---
+var keysPath = Path.Combine(Path.GetTempPath(), "keys");
+var keysDirectory = new DirectoryInfo(keysPath);
 if (!keysDirectory.Exists)
     keysDirectory.Create();
 
@@ -56,32 +58,42 @@ builder.Services.AddHostedService<EmailCleanupHostedService>();
 builder.Services.AddHostedService<DuplicateCleanupService>();
 builder.Services.AddHostedService<DataCopyService>();
 
-// --- Строка подключения и версия сервера MySQL ---
+// --- Строки подключения ---
 var defaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-var handyConnectionString = builder.Configuration.GetConnectionString("ConnectionStringsHandy"); // исправлено
+if (string.IsNullOrEmpty(defaultConnectionString))
+{
+    throw new InvalidOperationException("DefaultConnection string is not configured.");
+}
 
-var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
+var handyConnectionString = builder.Configuration.GetConnectionString("HandyConnection");
+if (string.IsNullOrEmpty(handyConnectionString))
+{
+    throw new InvalidOperationException("ConnectionStringsHandy string is not configured.");
+}
 
-// --- Регистрация DbContext-ов ---
-builder.Services.AddDbContext<UnitMeasurementComponentContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
-builder.Services.AddDbContext<SupplyUnitMeasurementContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
-builder.Services.AddDbContext<SupplyProviderContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
-builder.Services.AddDbContext<SupplyPriceComponentContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
-builder.Services.AddDbContext<SupplyManufacturerContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
-builder.Services.AddDbContext<SupplyComponentContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
-builder.Services.AddDbContext<SupplyCompanyContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
-builder.Services.AddDbContext<CollaboratorSystemContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
-builder.Services.AddDbContext<CompanyCollaboratorContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
-builder.Services.AddDbContext<DeliveryAddressContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
-builder.Services.AddDbContext<ManufacturerComponentContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
-builder.Services.AddDbContext<HandyDbContext>(opt => opt.UseMySql(handyConnectionString, serverVersion));
+builder.Services.AddDbContext<UnitMeasurementComponentContext>(opt => opt.UseMySQL(defaultConnectionString));
+builder.Services.AddDbContext<HandyDbContext>(opt => opt.UseMySQL(handyConnectionString));
 
-// --- JWT ---
+
+// --- Регистрация DbContext-ов с MySQL ---
+builder.Services.AddDbContext<UnitMeasurementComponentContext>(opt => opt.UseMySQL(defaultConnectionString));
+builder.Services.AddDbContext<SupplyUnitMeasurementContext>(opt => opt.UseMySQL(defaultConnectionString));
+builder.Services.AddDbContext<SupplyProviderContext>(opt => opt.UseMySQL(defaultConnectionString));
+builder.Services.AddDbContext<SupplyPriceComponentContext>(opt => opt.UseMySQL(defaultConnectionString));
+builder.Services.AddDbContext<SupplyManufacturerContext>(opt => opt.UseMySQL(defaultConnectionString));
+builder.Services.AddDbContext<SupplyComponentContext>(opt => opt.UseMySQL(defaultConnectionString));
+builder.Services.AddDbContext<SupplyCompanyContext>(opt => opt.UseMySQL(defaultConnectionString));
+builder.Services.AddDbContext<CollaboratorSystemContext>(opt => opt.UseMySQL(defaultConnectionString));
+builder.Services.AddDbContext<CompanyCollaboratorContext>(opt => opt.UseMySQL(defaultConnectionString));
+builder.Services.AddDbContext<DeliveryAddressContext>(opt => opt.UseMySQL(defaultConnectionString));
+builder.Services.AddDbContext<ManufacturerComponentContext>(opt => opt.UseMySQL(defaultConnectionString));
+builder.Services.AddDbContext<HandyDbContext>(opt => opt.UseMySQL(handyConnectionString));
+
+// --- JWT аутентификация ---
 var secretKey = builder.Configuration["JwtSettings:SecretKey"];
 if (string.IsNullOrEmpty(secretKey))
-{
     throw new Exception("JwtSettings:SecretKey не найден в конфигурации");
-}
+
 var key = Encoding.UTF8.GetBytes(secretKey);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

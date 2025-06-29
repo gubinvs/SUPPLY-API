@@ -31,7 +31,6 @@ namespace SUPPLY_API
             }
 
             var user = _dbContext.CollaboratorSystem
-                .FromSqlRaw("SELECT * FROM CollaboratorSystem")
                 .FirstOrDefault(p => p.EmailCollaborator == model.Email);
 
             if (user != null)

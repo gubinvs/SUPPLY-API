@@ -59,6 +59,8 @@ builder.Services.Configure<CurrentServer>(builder.Configuration.GetSection("Serv
 // === Фоновые службы ===
 builder.Services.AddHostedService<EmailCleanupHostedService>();
 builder.Services.AddHostedService<DuplicateCleanupService>();
+builder.Services.AddHostedService<DataCopyService>(); // Копирование базы данных HANDY
+
 
 // === Строка подключения ===
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -76,6 +78,8 @@ builder.Services.AddDbContext<CollaboratorSystemContext>(options => options.UseM
 builder.Services.AddDbContext<CompanyCollaboratorContext>(options => options.UseMySql(connectionString, serverVersion));
 builder.Services.AddDbContext<DeliveryAddressContext>(options => options.UseMySql(connectionString, serverVersion));
 builder.Services.AddDbContext<ManufacturerComponentContext>(options => options.UseMySql(connectionString, serverVersion));
+builder.Services.AddDbContext<HandyDbContext>(options =>options.UseMySQL("ConnectionStringsHandy:DefaultConnection", serverVersion));
+
 
 // === JWT-аутентификация ===
 var secretKey = "YourSecureKeyHereMustBeLongEnough"; // Лучше хранить в конфигурации

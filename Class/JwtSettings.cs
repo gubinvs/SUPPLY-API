@@ -2,6 +2,6 @@ namespace SUPPLY_API
 {
     public class JwtSettings
     {
-        public string SecretKey { get; set; }
+        public required string SecretKey { get; set; }
     }
 }

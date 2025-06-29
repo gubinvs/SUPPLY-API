@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 using System.Timers;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
-
-
-
-
+using Microsoft.Extensions.DependencyInjection;  // Добавлено для IServiceScopeFactory
+using System.Net.Http;
+using System.Net.Http.Json;
 
 namespace SUPPLY_API
 {
@@ -31,34 +30,31 @@ namespace SUPPLY_API
     {
         private readonly ILogger<DataCopyService> _logger;
         private readonly IConfiguration _configuration;
+        private readonly IServiceScopeFactory _scopeFactory; // для создания scope
         private System.Timers.Timer _timer = new System.Timers.Timer();
 
         private string _connectionHandy;
         private string _connectionEncomponent;
         private string _currenServerApi;
-        private readonly HandyDbContext _handyDbContext;
-        private readonly SupplyProviderContext _dbSupplyProvider;
 
         public DataCopyService(
             ILogger<DataCopyService> logger,
             IConfiguration configuration,
-            HandyDbContext handyDbContext,
-            SupplyProviderContext dbSupplyProvider
-
-            )
+            IServiceScopeFactory scopeFactory  // Инжектируем scope factory
+        )
         {
             _logger = logger;
             _configuration = configuration;
-            _dbSupplyProvider = dbSupplyProvider;
+            _scopeFactory = scopeFactory;
+
             _connectionHandy = _configuration["ConnectionStringsHandy:DefaultConnection"]
                 ?? throw new InvalidOperationException("ConnectionStringsHandy:DefaultConnection is not configured.");
 
             _connectionEncomponent = _configuration["ConnectionStrings:DefaultConnection"]
                 ?? throw new InvalidOperationException("ConnectionStrings:DefaultConnection is not configured.");
 
-            _currenServerApi = _currenServerApi = _configuration["ServerAddresses:ServerAddressApi"]
-                  ?? throw new InvalidOperationException("ServerAddressApi is not configured.");
-            _handyDbContext = handyDbContext;
+            _currenServerApi = _configuration["ServerAddresses:ServerAddressApi"]
+                ?? throw new InvalidOperationException("ServerAddressApi is not configured.");
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -94,15 +90,15 @@ namespace SUPPLY_API
                 await handyConn.OpenAsync();
                 await encomponentConn.OpenAsync();
 
-                await CopySupplyProviderAsync();
-                // Далее аналогично
+                // Создаём scope для получения scoped сервисов DbContext
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var handyDbContext = scope.ServiceProvider.GetRequiredService<HandyDbContext>();
+                    var dbSupplyProvider = scope.ServiceProvider.GetRequiredService<SupplyProviderContext>();
 
-                // await CopySupplyComponentAsync(handyConn, encomponentConn);
-                // await CopyPriceComponentAsync(handyConn, encomponentConn);
-                // await CopySupplyManufacturerAsync(handyConn, encomponentConn);
-                // await CopyManufacturerComponentAsync(handyConn, encomponentConn);
-                // await CopySupplyUnitMeasurementAsync(handyConn, encomponentConn);
-                // await CopyUnitMeasurementComponentAsync(handyConn, encomponentConn);
+                    await CopySupplyProviderAsync(handyDbContext, dbSupplyProvider);
+                    // Далее аналогично для других методов, передавать handyDbContext и dbSupplyProvider
+                }
 
                 _logger.LogInformation("Перенос данных завершён успешно.");
                 // TODO: отправить email/telegram
@@ -125,27 +121,22 @@ namespace SUPPLY_API
             _timer?.Dispose();
         }
 
-        // Пример копирования провайдеров
-        private async Task CopySupplyProviderAsync()
+        // Пример копирования провайдеров с параметрами DbContext
+        private async Task CopySupplyProviderAsync(HandyDbContext handyDbContext, SupplyProviderContext dbSupplyProvider)
         {
-            var providers = await _handyDbContext.SupplyProvider.ToListAsync();
+            var providers = await handyDbContext.SupplyProvider.ToListAsync();
 
             foreach (var provider in providers)
             {
                 string? guidIdProvider = provider.GuidIdProvider;
                 string? nameProvider = provider.NameProvider;
-                string? innProvider =  provider.InnProvider;
-                
-                
+                string? innProvider = provider.InnProvider;
 
-                using var targetConn = new MySqlConnection(_connectionEncomponent);
-                await targetConn.OpenAsync();
+                // Проверка на наличие в базе, в которую копируются данные, совпадений по ИНН
+                bool exists = await dbSupplyProvider.SupplyProvider.AnyAsync(c => c.InnProvider == innProvider);
 
-                // Проверка на наличие в базе, в которую компируются данные, совпадений по ИНН
-                var checkCmd = _dbSupplyProvider.SupplyProvider
-                    .AnyAsync(c => c.InnProvider == innProvider);
                 // Если такой записи нет, то отправляем запрос на текущий API сервер с целью записи данных
-                if (checkCmd == null)
+                if (!exists)
                 {
                     await AddProviderViaApiAsync(guidIdProvider, nameProvider, Convert.ToInt64(innProvider));
                 }
@@ -171,7 +162,6 @@ namespace SUPPLY_API
                 GuidIdProvider = guidIdProvider,
                 NameProvider = nameProvider,
                 InnProvider = innProvider,
-               
             };
 
             var response = await client.PostAsJsonAsync(_currenServerApi + "/api/CopyCompanyProvider", provider);
@@ -183,3 +173,4 @@ namespace SUPPLY_API
         }
     }
 }
+

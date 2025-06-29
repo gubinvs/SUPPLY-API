@@ -46,7 +46,8 @@ if (OperatingSystem.IsWindows()) dataProtectionBuilder.ProtectKeysWithDpapiNG();
 
 // --- Порт ---
 var port = Environment.GetEnvironmentVariable("HTTP_PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://localhost:{port}");
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 
 
 // --- Сервисы ---

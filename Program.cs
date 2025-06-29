@@ -8,21 +8,22 @@ using SUPPLY_API.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- Загрузка токена RuTokenSettings:Token с переопределением из переменной окружения ---
-var ruTokenFromConfig = builder.Configuration["RuTokenSettings:Token"];
+// --- Правильная загрузка токена RuTokenSettings:Token ---
 var ruTokenFromEnv = Environment.GetEnvironmentVariable("RU_SERVICE_TOKEN");
-
 if (!string.IsNullOrEmpty(ruTokenFromEnv))
 {
     builder.Configuration["RuTokenSettings:Token"] = ruTokenFromEnv;
 }
-else if (string.IsNullOrEmpty(ruTokenFromConfig))
+else if (string.IsNullOrEmpty(builder.Configuration["RuTokenSettings:Token"]))
 {
     throw new Exception("RU_SERVICE_TOKEN не найден ни в конфиге, ни в переменных окружения!");
 }
 
-// === Настройка защиты данных ===
+// --- Настройка защиты данных ---
 var keysDirectory = new DirectoryInfo("/app/keys");
+if (!keysDirectory.Exists)
+    keysDirectory.Create();
+
 var dataProtectionBuilder = builder.Services.AddDataProtection().PersistKeysToFileSystem(keysDirectory);
 
 if (OperatingSystem.IsWindows())
@@ -30,64 +31,63 @@ if (OperatingSystem.IsWindows())
     dataProtectionBuilder.ProtectKeysWithDpapiNG();
 }
 
-// === Установка порта ===
+// --- Порт ---
 var port = Environment.GetEnvironmentVariable("HTTP_PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://+:{port}");
 
-// === Сервисы ===
-builder.Services.AddControllersWithViews();
+// --- Сервисы ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Конфигурация RuTokenSettings
+// Конфигурации
 builder.Services.Configure<RuTokenSettings>(builder.Configuration.GetSection("RuTokenSettings"));
-
-// Регистрируем сервисы
-builder.Services.AddHttpClient<DaDataService>();
-builder.Services.AddScoped<SomeServiceUsingToken>();
-builder.Services.AddScoped<CollaboratorSystemContext>();
-builder.Services.AddScoped<TokenService>();
-
-// Email настройки
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-builder.Services.AddScoped<EmailSender>();
-
-// Прочее
 builder.Services.Configure<CurrentServer>(builder.Configuration.GetSection("ServerAddresses"));
 
-// === Фоновые службы ===
+// HTTP Клиенты и сервисы
+builder.Services.AddHttpClient<DaDataService>();
+builder.Services.AddScoped<SomeServiceUsingToken>();
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<EmailSender>();
+
+// Фоновые службы
 builder.Services.AddHostedService<EmailCleanupHostedService>();
 builder.Services.AddHostedService<DuplicateCleanupService>();
-builder.Services.AddHostedService<DataCopyService>(); // Копирование базы данных HANDY
+builder.Services.AddHostedService<DataCopyService>();
 
+// --- Строка подключения и версия сервера MySQL ---
+var defaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var handyConnectionString = builder.Configuration.GetConnectionString("ConnectionStringsHandy"); // исправлено
 
-// === Строка подключения ===
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var serverVersion = new MySqlServerVersion(new Version(8, 0, 25));
 
-// === DbContext-ы ===
-builder.Services.AddDbContext<UnitMeasurementComponentContext>(options => options.UseMySql(connectionString, serverVersion));
-builder.Services.AddDbContext<SupplyUnitMeasurementContext>(options => options.UseMySql(connectionString, serverVersion));
-builder.Services.AddDbContext<SupplyProviderContext>(options => options.UseMySql(connectionString, serverVersion));
-builder.Services.AddDbContext<SupplyPriceComponentContext>(options => options.UseMySql(connectionString, serverVersion));
-builder.Services.AddDbContext<SupplyManufacturerContext>(options => options.UseMySql(connectionString, serverVersion));
-builder.Services.AddDbContext<SupplyComponentContext>(options => options.UseMySql(connectionString, serverVersion));
-builder.Services.AddDbContext<SupplyCompanyContext>(options => options.UseMySql(connectionString, serverVersion));
-builder.Services.AddDbContext<CollaboratorSystemContext>(options => options.UseMySql(connectionString, serverVersion));
-builder.Services.AddDbContext<CompanyCollaboratorContext>(options => options.UseMySql(connectionString, serverVersion));
-builder.Services.AddDbContext<DeliveryAddressContext>(options => options.UseMySql(connectionString, serverVersion));
-builder.Services.AddDbContext<ManufacturerComponentContext>(options => options.UseMySql(connectionString, serverVersion));
-builder.Services.AddDbContext<HandyDbContext>(options => options.UseMySql("ConnectionStringsHandy:DefaultConnection", serverVersion));
+// --- Регистрация DbContext-ов ---
+builder.Services.AddDbContext<UnitMeasurementComponentContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
+builder.Services.AddDbContext<SupplyUnitMeasurementContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
+builder.Services.AddDbContext<SupplyProviderContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
+builder.Services.AddDbContext<SupplyPriceComponentContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
+builder.Services.AddDbContext<SupplyManufacturerContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
+builder.Services.AddDbContext<SupplyComponentContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
+builder.Services.AddDbContext<SupplyCompanyContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
+builder.Services.AddDbContext<CollaboratorSystemContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
+builder.Services.AddDbContext<CompanyCollaboratorContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
+builder.Services.AddDbContext<DeliveryAddressContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
+builder.Services.AddDbContext<ManufacturerComponentContext>(opt => opt.UseMySql(defaultConnectionString, serverVersion));
+builder.Services.AddDbContext<HandyDbContext>(opt => opt.UseMySql(handyConnectionString, serverVersion));
 
-// === JWT-аутентификация ===
-var secretKey = "YourSecureKeyHereMustBeLongEnough"; // Лучше хранить в конфигурации
+// --- JWT ---
+var secretKey = builder.Configuration["JwtSettings:SecretKey"];
+if (string.IsNullOrEmpty(secretKey))
+{
+    throw new Exception("JwtSettings:SecretKey не найден в конфигурации");
+}
 var key = Encoding.UTF8.GetBytes(secretKey);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    .AddJwtBearer(opt =>
     {
-        options.TokenValidationParameters = new TokenValidationParameters
+        opt.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key),
@@ -97,7 +97,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// === CORS ===
+// --- CORS ---
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -110,7 +110,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// === Middleware ===
+// --- Middleware ---
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -136,6 +136,5 @@ if (app.Environment.IsDevelopment())
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 
 app.Run();

@@ -78,7 +78,7 @@ builder.Services.AddDbContext<CollaboratorSystemContext>(options => options.UseM
 builder.Services.AddDbContext<CompanyCollaboratorContext>(options => options.UseMySql(connectionString, serverVersion));
 builder.Services.AddDbContext<DeliveryAddressContext>(options => options.UseMySql(connectionString, serverVersion));
 builder.Services.AddDbContext<ManufacturerComponentContext>(options => options.UseMySql(connectionString, serverVersion));
-builder.Services.AddDbContext<HandyDbContext>(options => options.UseMySQL("ConnectionStringsHandy:DefaultConnection", serverVersion));
+builder.Services.AddDbContext<HandyDbContext>(options => options.UseMySql("ConnectionStringsHandy:DefaultConnection", serverVersion));
 
 // === JWT-аутентификация ===
 var secretKey = "YourSecureKeyHereMustBeLongEnough"; // Лучше хранить в конфигурации
@@ -135,7 +135,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 app.Run();

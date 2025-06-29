@@ -48,10 +48,6 @@
               "target": "Package",
               "version": "[0.102.2, )"
             },
-            "Dadata": {
-              "target": "Package",
-              "version": "[1.6.0, )"
-            },
             "EPPlus": {
               "target": "Package",
               "version": "[6.0.3, )"
@@ -66,23 +62,15 @@
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[8.0.2, )"
+              "version": "[9.0.3, )"
             },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
-              "version": "[8.0.2, )"
+              "version": "[9.0.3, )"
             },
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
               "version": "[1.20.1, )"
-            },
-            "MySql.Data": {
-              "target": "Package",
-              "version": "[9.3.0, )"
-            },
-            "MySql.EntityFrameworkCore": {
-              "target": "Package",
-              "version": "[9.0.3, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
@@ -90,7 +78,7 @@
             },
             "Pomelo.EntityFrameworkCore.MySql": {
               "target": "Package",
-              "version": "[8.0.3, )"
+              "version": "[9.0.3, )"
             },
             "QRCoder": {
               "target": "Package",

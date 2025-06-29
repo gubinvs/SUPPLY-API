@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 
@@ -11,26 +12,30 @@ namespace SUPPLY_API
     /// </summary>
     public class TokenService
     {
-        private const string SecretKey = "YourSecureKeyHereMustBeLongEnough"; // Совпадает с ключом в Program.cs
-        private const int TokenExpiryMinutes = 14400; // Срок действия токена 24 часа
+        private readonly string _secretKey;
+        private const int TokenExpiryMinutes = 1440;
+
+        public TokenService(IOptions<JwtSettings> jwtSettings)
+        {
+            _secretKey = jwtSettings.Value.SecretKey;
+
+            if (string.IsNullOrWhiteSpace(_secretKey) || Encoding.UTF8.GetByteCount(_secretKey) < 32)
+                throw new ArgumentException("JwtSettings:SecretKey must be configured and at least 256 bits long.");
+        }
 
         public string GenerateToken(string email, string role)
         {
+            var key = Encoding.UTF8.GetBytes(_secretKey);
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(SecretKey);
-            if (key.Length < 32) // 32 байта = 256 бит
-            {
-                throw new ArgumentException("Key must be at least 256 bits long.");
-            }
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-            new Claim(ClaimTypes.Email, email),
-            new Claim(ClaimTypes.Role, role),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // Уникальный идентификатор
-        }),
+                new Claim(ClaimTypes.Email, email),
+                new Claim(ClaimTypes.Role, role),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            }),
                 Expires = DateTime.UtcNow.AddMinutes(TokenExpiryMinutes),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
@@ -38,6 +43,6 @@ namespace SUPPLY_API
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-
     }
+
 }

@@ -21,17 +21,16 @@ namespace SUPPLY_API.Controllers
     public class AutorizationController : ControllerBase
     {
         private readonly TokenService _tokenService;
-
-        private readonly ILogger<AddInformationCompanyController> _logger;
-
+        private readonly ILogger<AutorizationController> _logger;
         private readonly CollaboratorSystemContext _db;
 
         public AutorizationController(
-            ILogger<AddInformationCompanyController> logger,
-            CollaboratorSystemContext db
+            ILogger<AutorizationController> logger,
+            CollaboratorSystemContext db,
+            TokenService tokenService
         )
         {
-            _tokenService = new TokenService();
+            _tokenService = tokenService;
             _logger = logger;
             _db = db;
         }
@@ -39,26 +38,16 @@ namespace SUPPLY_API.Controllers
         [HttpPost]
         public IActionResult Login([FromBody] LoginModel model)
         {
-            // Подключаемся к базе данных
-    
-            // Загрузил из базы данных информацию о пользователе (по email), который пришел в запросе
-            var user = _db.CollaboratorSystem.FromSqlRaw("SELECT * FROM CollaboratorSystem")
-                                    .Where(p => p.EmailCollaborator == model.Email)
-                                    .FirstOrDefault(); // Используем FirstOrDefault, чтобы сразу получить одного пользователя
+            var user = _db.CollaboratorSystem
+                .Where(p => p.EmailCollaborator == model.Email)
+                .FirstOrDefault();
 
-            // Если пользователь не найден
             if (user == null)
-            {
                 return Ok(new { message = "Пользователь не найден!" });
-            }
 
-            // Проверка подтверждения почты
             if (!user.ActivationEmailCollaborator)
-            {
-                return Ok(new { message = "Пожалуйста, подтвердите свой адрес электронной почты. В противном случае, ваш аккаунт может быть удалён в ближайшее время." });
-            }
+                return Ok(new { message = "Пожалуйста, подтвердите свой адрес электронной почты." });
 
-            // Проверка пароля сохраненного в базе данных и который пришел в запросе
             if (model.Password == user.PasswordCollaborator)
             {
                 var token = _tokenService.GenerateToken(model.Email, "User");
@@ -72,19 +61,16 @@ namespace SUPPLY_API.Controllers
 
                 _db.SaveChanges();
 
-                // Отправляем токен и GuidIdRoleSystem
                 return Ok(new
                 {
                     Token = token,
-                    RoleId = user.GuidIdRoleSystem,  // ← возвращаем нужное поле
+                    RoleId = user.GuidIdRoleSystem,
                     guidIdCollaborator = user.GuidIdCollaborator
                 });
             }
 
-            // Если проверка не прошла, отправляем ответ
             return Ok(new { message = "Неверный логин или пароль" });
         }
-        
     }
 
     public record LoginModel(string Email, string Password);

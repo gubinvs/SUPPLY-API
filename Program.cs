@@ -1,15 +1,16 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using SUPPLY_API;
 using SUPPLY_API.Models;
 using MySql.EntityFrameworkCore.Extensions;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- Загрузка токена RuTokenSettings:Token ---
+// --- Загрузка токена RuTokenSettings:Token из переменных окружения ---
 var ruTokenFromEnv = Environment.GetEnvironmentVariable("RU_SERVICE_TOKEN");
 if (!string.IsNullOrEmpty(ruTokenFromEnv))
 {
@@ -19,6 +20,25 @@ else if (string.IsNullOrEmpty(builder.Configuration["RuTokenSettings:Token"]))
 {
     throw new Exception("RU_SERVICE_TOKEN не найден ни в конфиге, ни в переменных окружения!");
 }
+
+// --- Регистрация и валидация JwtSettings ---
+builder.Services
+    .AddOptions<JwtSettings>()
+    .Bind(builder.Configuration.GetSection("JwtSettings"))
+    .Validate(jwt =>
+        !string.IsNullOrWhiteSpace(jwt.SecretKey) &&
+        Encoding.UTF8.GetByteCount(jwt.SecretKey) >= 32,
+        "JwtSettings:SecretKey должен быть задан и иметь длину не менее 32 байт");
+
+// Получаем JwtSettings для конфигурации аутентификации
+var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+
+if (jwtSettings == null || string.IsNullOrWhiteSpace(jwtSettings.SecretKey) || Encoding.UTF8.GetByteCount(jwtSettings.SecretKey) < 32)
+{
+    throw new Exception("JwtSettings:SecretKey не найден или слишком короткий");
+}
+
+var key = Encoding.UTF8.GetBytes(jwtSettings.SecretKey);
 
 // --- Настройка DataProtection ---
 var keysPath = Path.Combine(Path.GetTempPath(), "keys");
@@ -33,24 +53,24 @@ if (OperatingSystem.IsWindows())
     dataProtectionBuilder.ProtectKeysWithDpapiNG();
 }
 
-// --- Порт ---
+// --- Настройка порта ---
 var port = Environment.GetEnvironmentVariable("HTTP_PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://+:{port}");
 
-// --- Сервисы ---
+// --- Добавляем сервисы ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Конфигурации
+// Конфигурации для других секций
 builder.Services.Configure<RuTokenSettings>(builder.Configuration.GetSection("RuTokenSettings"));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.Configure<CurrentServer>(builder.Configuration.GetSection("ServerAddresses"));
 
-// HTTP Клиенты и сервисы
+// Регистрируем сервисы с зависимостями
 builder.Services.AddHttpClient<DaDataService>();
 builder.Services.AddScoped<SomeServiceUsingToken>();
-builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<TokenService>();       // TokenService с внедрением IOptions<JwtSettings>
 builder.Services.AddScoped<EmailSender>();
 
 // Фоновые службы
@@ -58,7 +78,8 @@ builder.Services.AddHostedService<EmailCleanupHostedService>();
 builder.Services.AddHostedService<DuplicateCleanupService>();
 builder.Services.AddHostedService<DataCopyService>();
 
-// --- Строки подключения ---
+
+// --- Проверяем и регистрируем строки подключения к БД ---
 var defaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrEmpty(defaultConnectionString))
 {
@@ -68,14 +89,10 @@ if (string.IsNullOrEmpty(defaultConnectionString))
 var handyConnectionString = builder.Configuration.GetConnectionString("HandyConnection");
 if (string.IsNullOrEmpty(handyConnectionString))
 {
-    throw new InvalidOperationException("ConnectionStringsHandy string is not configured.");
+    throw new InvalidOperationException("ConnectionStrings:Handy string is not configured.");
 }
 
-builder.Services.AddDbContext<UnitMeasurementComponentContext>(opt => opt.UseMySQL(defaultConnectionString));
-builder.Services.AddDbContext<HandyDbContext>(opt => opt.UseMySQL(handyConnectionString));
-
-
-// --- Регистрация DbContext-ов с MySQL ---
+// Регистрируем DbContext'ы с MySQL
 builder.Services.AddDbContext<UnitMeasurementComponentContext>(opt => opt.UseMySQL(defaultConnectionString));
 builder.Services.AddDbContext<SupplyUnitMeasurementContext>(opt => opt.UseMySQL(defaultConnectionString));
 builder.Services.AddDbContext<SupplyProviderContext>(opt => opt.UseMySQL(defaultConnectionString));
@@ -90,12 +107,6 @@ builder.Services.AddDbContext<ManufacturerComponentContext>(opt => opt.UseMySQL(
 builder.Services.AddDbContext<HandyDbContext>(opt => opt.UseMySQL(handyConnectionString));
 
 // --- JWT аутентификация ---
-var secretKey = builder.Configuration["JwtSettings:SecretKey"];
-if (string.IsNullOrEmpty(secretKey))
-    throw new Exception("JwtSettings:SecretKey не найден в конфигурации");
-
-var key = Encoding.UTF8.GetBytes(secretKey);
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt =>
     {
@@ -150,3 +161,4 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+

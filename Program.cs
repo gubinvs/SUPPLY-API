@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.DataProtection;
 using SUPPLY_API;
 using SUPPLY_API.Models;
-using MySql.EntityFrameworkCore.Extensions;
+using Pomelo.EntityFrameworkCore.MySql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,7 +46,7 @@ if (OperatingSystem.IsWindows()) dataProtectionBuilder.ProtectKeysWithDpapiNG();
 
 // --- Порт ---
 var port = Environment.GetEnvironmentVariable("HTTP_PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+builder.WebHost.UseUrls($"http://localhost:{port}");
 
 
 // --- Сервисы ---
@@ -68,24 +68,23 @@ builder.Services.AddHostedService<DuplicateCleanupService>();
 builder.Services.AddHostedService<DataCopyService>();
 
 // --- Проверка строк подключения ---
-var defaultConn = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("DefaultConnection string is not configured.");
-var handyConn = builder.Configuration.GetConnectionString("HandyConnection")
-    ?? throw new InvalidOperationException("ConnectionStrings:Handy string is not configured.");
+var defaultConn = builder.Configuration.GetConnectionString("AppDatabase");
+var handyConn = builder.Configuration.GetConnectionString("HandyDatabase");
 
 // --- DbContexts ---
-builder.Services.AddDbContext<UnitMeasurementComponentContext>(opt => opt.UseMySQL(defaultConn));
-builder.Services.AddDbContext<SupplyUnitMeasurementContext>(opt => opt.UseMySQL(defaultConn));
-builder.Services.AddDbContext<SupplyProviderContext>(opt => opt.UseMySQL(defaultConn));
-builder.Services.AddDbContext<SupplyPriceComponentContext>(opt => opt.UseMySQL(defaultConn));
-builder.Services.AddDbContext<SupplyManufacturerContext>(opt => opt.UseMySQL(defaultConn));
-builder.Services.AddDbContext<SupplyComponentContext>(opt => opt.UseMySQL(defaultConn));
-builder.Services.AddDbContext<SupplyCompanyContext>(opt => opt.UseMySQL(defaultConn));
-builder.Services.AddDbContext<CollaboratorSystemContext>(opt => opt.UseMySQL(defaultConn));
-builder.Services.AddDbContext<CompanyCollaboratorContext>(opt => opt.UseMySQL(defaultConn));
-builder.Services.AddDbContext<DeliveryAddressContext>(opt => opt.UseMySQL(defaultConn));
-builder.Services.AddDbContext<ManufacturerComponentContext>(opt => opt.UseMySQL(defaultConn));
-builder.Services.AddDbContext<HandyDbContext>(opt => opt.UseMySQL(handyConn));
+builder.Services.AddDbContext<UnitMeasurementComponentContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
+builder.Services.AddDbContext<SupplyUnitMeasurementContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
+builder.Services.AddDbContext<SupplyProviderContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
+builder.Services.AddDbContext<SupplyPriceComponentContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
+builder.Services.AddDbContext<SupplyManufacturerContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
+builder.Services.AddDbContext<SupplyComponentContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
+builder.Services.AddDbContext<SupplyCompanyContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
+builder.Services.AddDbContext<CollaboratorSystemContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
+builder.Services.AddDbContext<CompanyCollaboratorContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
+builder.Services.AddDbContext<DeliveryAddressContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
+builder.Services.AddDbContext<ManufacturerComponentContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
+builder.Services.AddDbContext<HandyDbContext>(opt => opt.UseMySql(handyConn, ServerVersion.AutoDetect(handyConn)));
+
 
 // --- JWT ---
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

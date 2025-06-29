@@ -60,7 +60,15 @@ builder.WebHost.UseUrls($"http://+:{port}");
 // --- Добавляем сервисы ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "SUPPLY API",
+        Version = "v1",
+        Description = "API для управления поставками"
+    });
+});
 
 // Конфигурации для других секций
 builder.Services.Configure<RuTokenSettings>(builder.Configuration.GetSection("RuTokenSettings"));
@@ -77,7 +85,6 @@ builder.Services.AddScoped<EmailSender>();
 builder.Services.AddHostedService<EmailCleanupHostedService>();
 builder.Services.AddHostedService<DuplicateCleanupService>();
 builder.Services.AddHostedService<DataCopyService>();
-
 
 // --- Проверяем и регистрируем строки подключения к БД ---
 var defaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -127,7 +134,8 @@ builder.Services.AddCors(options =>
     {
         policy.AllowAnyHeader()
               .AllowAnyMethod()
-              .SetIsOriginAllowed(_ => true);
+              .SetIsOriginAllowed(_ => true)
+              .AllowCredentials();
     });
 });
 
@@ -153,7 +161,11 @@ app.UseAuthorization();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "SUPPLY API v1");
+        c.RoutePrefix = string.Empty; // Swagger UI по корню, если нужно
+    });
 }
 
 app.MapControllerRoute(

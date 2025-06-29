@@ -8458,7 +8458,6 @@
       "Microsoft.EntityFrameworkCore.SqlServer >= 9.0.3",
       "Microsoft.VisualStudio.Azure.Containers.Tools.Targets >= 1.20.1",
       "Newtonsoft.Json >= 13.0.3",
-      "Pomelo.EntityFrameworkCore.MySql >= 9.0.3",
       "QRCoder >= 1.6.0",
       "Swashbuckle.AspNetCore >= 6.4.0",
       "System.Web.Http >= 4.0.0",
@@ -8540,10 +8539,6 @@
             "target": "Package",
             "version": "[13.0.3, )"
           },
-          "Pomelo.EntityFrameworkCore.MySql": {
-            "target": "Package",
-            "version": "[9.0.3, )"
-          },
           "QRCoder": {
             "target": "Package",
             "version": "[1.6.0, )"
@@ -8583,16 +8578,5 @@
         "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.101/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1102",
-      "level": "Error",
-      "message": "Unable to find package Pomelo.EntityFrameworkCore.MySql with version (>= 9.0.3)\n  - Found 170 version(s) in nuget.org [ Nearest version: 9.0.0-preview.3.efcore.9.0.0 ]",
-      "libraryId": "Pomelo.EntityFrameworkCore.MySql",
-      "targetGraphs": [
-        "net9.0"
-      ]
-    }
-  ]
+  }
 }

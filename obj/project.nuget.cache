@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "dgSpecHash": "oD1BGArkG1A=",
-  "success": false,
+  "dgSpecHash": "PwnV6pKwIVA=",
+  "success": true,
   "projectFilePath": "/Users/vladimirgubin/SUPPLY-API/SUPPLY-API.csproj",
   "expectedPackageFiles": [
     "/Users/vladimirgubin/.nuget/packages/azure.core/1.38.0/azure.core.1.38.0.nupkg.sha512",
@@ -162,15 +162,5 @@
     "/Users/vladimirgubin/.nuget/packages/xceed.words.net/4.0.25103.5784/xceed.words.net.4.0.25103.5784.nupkg.sha512",
     "/Users/vladimirgubin/.nuget/packages/xlparser/1.5.2/xlparser.1.5.2.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1102",
-      "level": "Error",
-      "message": "Unable to find package Pomelo.EntityFrameworkCore.MySql with version (>= 9.0.3)\n  - Found 170 version(s) in nuget.org [ Nearest version: 9.0.0-preview.3.efcore.9.0.0 ]",
-      "libraryId": "Pomelo.EntityFrameworkCore.MySql",
-      "targetGraphs": [
-        "net9.0"
-      ]
-    }
-  ]
+  "logs": []
 }

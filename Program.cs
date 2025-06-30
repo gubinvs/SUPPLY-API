@@ -102,12 +102,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // --- CORS ---
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("AllowAll", policy =>
+//         policy.AllowAnyHeader()
+//               .AllowAnyMethod()
+//               .SetIsOriginAllowed(_ => true));
+// });
+
+// --- CORS ---
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
-        policy.AllowAnyHeader()
-              .AllowAnyMethod()
-              .SetIsOriginAllowed(_ => true));
+    options.AddPolicy("AllowOnlySupply", policy =>
+        policy.WithOrigins("https://supply.encomponent.ru") // Только этот источник
+              .AllowAnyHeader()
+              .AllowAnyMethod());
 });
 
 var app = builder.Build();

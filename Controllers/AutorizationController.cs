@@ -46,7 +46,7 @@ namespace SUPPLY_API.Controllers
                 return Ok(new { message = "Пользователь не найден!" });
 
             if (!user.ActivationEmailCollaborator)
-                return Ok(new { message = "Пожалуйста, подтвердите свой адрес электронной почты." });
+                return Ok(new { message = "Пожалуйста, подтвердите email — иначе аккаунт будет удалён." });
 
             if (model.Password == user.PasswordCollaborator)
             {

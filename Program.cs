@@ -102,22 +102,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // --- CORS ---
-// builder.Services.AddCors(options =>
-// {
-//     options.AddPolicy("AllowAll", policy =>
-//         policy.AllowAnyHeader()
-//               .AllowAnyMethod()
-//               .SetIsOriginAllowed(_ => true));
-// });
-
-// --- CORS ---
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowOnlySupply", policy =>
-        policy.WithOrigins("https://supply.encomponent.ru") // Только этот источник
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+    options.AddPolicy("AllowAll", policy =>
+        policy.AllowAnyHeader()
+              .AllowAnyMethod()
+              .SetIsOriginAllowed(_ => true));
 });
+
+// --- CORS ---
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("AllowOnlySupply", policy =>
+//         policy.WithOrigins("https://supply.encomponent.ru") // Только этот источник
+//               .AllowAnyHeader()
+//               .AllowAnyMethod());
+// });
 
 var app = builder.Build();
 
@@ -133,8 +133,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// app.UseCors("AllowAll"); // Если все кому не лень запрашивают
-app.UseCors("AllowOnlySupply"); // только конкретному сайту
+app.UseCors("AllowAll"); // Если все кому не лень запрашивают
+// app.UseCors("AllowOnlySupply"); // только конкретному сайту
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -94,11 +94,30 @@ namespace SUPPLY_API
                 // Создаём scope для получения scoped сервисов DbContext
                 using (var scope = _scopeFactory.CreateScope())
                 {
-                    var handyDbContext = scope.ServiceProvider.GetRequiredService<HandyDbContext>();
+                    var dbHandyDbContext = scope.ServiceProvider.GetRequiredService<HandyDbContext>();
                     var dbSupplyProvider = scope.ServiceProvider.GetRequiredService<SupplyProviderContext>();
+                    var dbSupplyComponent = scope.ServiceProvider.GetRequiredService<SupplyComponentContext>();
+                    var dbSupplyManufacturer = scope.ServiceProvider.GetRequiredService<SupplyManufacturerContext>();
+                    var dbSupplyUnitMeasurement = scope.ServiceProvider.GetRequiredService<SupplyUnitMeasurementContext>();
+                    var dbManufacturerComponent = scope.ServiceProvider.GetRequiredService<ManufacturerComponentContext>();
+                    var dbUnitMeasurementComponent = scope.ServiceProvider.GetRequiredService<UnitMeasurementComponentContext>();
+                    var dbSupplyPriceComponent = scope.ServiceProvider.GetRequiredService<SupplyPriceComponentContext>();
 
-                    await CopySupplyProviderAsync(handyDbContext, dbSupplyProvider);
-                    // Далее аналогично для других методов, передавать handyDbContext и dbSupplyProvider
+                    // Копированее номенклатуры
+                    await CopySupplyComponentAsync(dbHandyDbContext, dbSupplyComponent);
+                    // Копирование данных поставщиков
+                    await CopySupplyProviderAsync(dbHandyDbContext, dbSupplyProvider);
+                    // Копирование данных о производителях
+                    await CopySupplyManufacturerAsync(dbHandyDbContext, dbSupplyManufacturer);
+                    // Процесс копирования данных о единицах измерения
+                    await CopySupplyUnitMeasurementAsync(dbHandyDbContext, dbSupplyUnitMeasurement);
+                    // Процесс копирования зависимостей номенклатуры и производителя
+                    await CopyManufacturerComponentAsync(dbHandyDbContext, dbManufacturerComponent);
+                    // Процесс копирования зависимостей о номенклатуре и ее единице измерения
+                    await CopyUnitMeasurementComponentAsync(dbHandyDbContext, dbUnitMeasurementComponent);
+                    // Процесс переноса данных о ценах поставщиков в целевую базу данных
+                    await CopyPriceComponentAsync(dbHandyDbContext, dbSupplyPriceComponent, dbSupplyProvider);
+
                 }
 
                 _logger.LogInformation("Перенос данных завершён успешно.");
@@ -122,10 +141,10 @@ namespace SUPPLY_API
             _timer?.Dispose();
         }
 
-        // Пример копирования провайдеров с параметрами DbContext
-        private async Task CopySupplyProviderAsync(HandyDbContext handyDbContext, SupplyProviderContext dbSupplyProvider)
+        // Метод копирования данных поставщиков (провайдеров)
+        private async Task CopySupplyProviderAsync(HandyDbContext dbHandyDbContext, SupplyProviderContext dbSupplyProvider)
         {
-            var providers = await handyDbContext.SupplyProvider.ToListAsync();
+            var providers = await dbHandyDbContext.SupplyProvider.ToListAsync();
 
             foreach (var provider in providers)
             {
@@ -144,15 +163,137 @@ namespace SUPPLY_API
             }
         }
 
+        // Метод копирования номенклатуры
+        private async Task CopySupplyComponentAsync(HandyDbContext dbHandyDbContext, SupplyComponentContext dbSupplyComponent)
+        {
+            // existingGuids — предварительно получаем список идентификаторов, чтобы не делать по одному запросу на каждый компонент.
+            // AddRangeAsync — добавляем сразу все новые записи, а не по одной.
+            //SaveChangesAsync() вызывается один раз — это эффективно.
 
-        // TODO: реализовать остальные методы аналогично
-        // private async Task CopySupplyComponentAsync(MySqlConnection source, MySqlConnection target) { /* ... */ }
-        // private async Task CopyPriceComponentAsync(MySqlConnection source, MySqlConnection target) { /* ... */ }
-        // private async Task CopySupplyManufacturerAsync(MySqlConnection source, MySqlConnection target) { /* ... */ }
-        // private async Task CopyManufacturerComponentAsync(MySqlConnection source, MySqlConnection target) { /* ... */ }
-        // private async Task CopySupplyUnitMeasurementAsync(MySqlConnection source, MySqlConnection target) { /* ... */ }
-        // private async Task CopyUnitMeasurementComponentAsync(MySqlConnection source, MySqlConnection target) { /* ... */ }
+            var components = await dbHandyDbContext.SupplyComponent.ToListAsync();
 
+            var existingGuids = await dbSupplyComponent.SupplyComponent
+                .Select(c => c.GuidIdComponent)
+                .ToListAsync();
+
+            var newComponents = components
+                .Where(c => !existingGuids.Contains(c.GuidIdComponent))
+                .ToList();
+
+            if (newComponents.Any())
+            {
+                await dbSupplyComponent.SupplyComponent.AddRangeAsync(newComponents);
+                await dbSupplyComponent.SaveChangesAsync();
+            }
+        }
+
+        // Копирование наименование компаний производителей
+        private async Task CopySupplyManufacturerAsync(HandyDbContext dbHandyDbContext, SupplyManufacturerContext dbSupplyManufacturer)
+        {
+            var manufacturer = await dbHandyDbContext.SupplyManufacturer.ToListAsync();
+            var existingGuids = await dbSupplyManufacturer.SupplyManufacturer
+                    .Select(c => c.GuidIdManufacturer)
+                    .ToListAsync();
+
+            var newManufacturer = manufacturer
+                .Where(c => !existingGuids.Contains(c.GuidIdManufacturer))
+                .ToList();
+
+            if (newManufacturer.Any())
+            {
+                await dbSupplyManufacturer.SupplyManufacturer.AddRangeAsync(newManufacturer);
+                await dbSupplyManufacturer.SaveChangesAsync();
+            }
+        }
+
+        // Копирование единиц измерения
+        private async Task CopySupplyUnitMeasurementAsync(HandyDbContext dbHandyDbContext, SupplyUnitMeasurementContext dbSupplyUnitMeasurement)
+        {
+            var unit = await dbHandyDbContext.SupplyUnitMeasurement.ToListAsync();
+            var existingGuids = await dbSupplyUnitMeasurement.SupplyUnitMeasurement
+                    .Select(c => c.GuidIdUnitMeasurement)
+                    .ToListAsync();
+
+            var newUnit = unit
+                .Where(c => !existingGuids.Contains(c.GuidIdUnitMeasurement))
+                .ToList();
+
+            if (newUnit.Any())
+            {
+                await dbSupplyUnitMeasurement.SupplyUnitMeasurement.AddRangeAsync(newUnit);
+                await dbSupplyUnitMeasurement.SaveChangesAsync();
+            }
+        }
+
+        // Метод копирование данных о зависимостях номенклатуры и единицы измерения
+        private async Task CopyManufacturerComponentAsync(HandyDbContext dbHandyDbContext, ManufacturerComponentContext dbManufacturerComponent)
+        {
+            var addiction = await dbHandyDbContext.ManufacturerComponent.ToListAsync();
+            var existingGuids = await dbManufacturerComponent.ManufacturerComponent
+                    .Select(c => c.GuidIdComponent)
+                    .ToListAsync();
+
+            var newAddiction = addiction
+                .Where(c => !existingGuids.Contains(c.GuidIdComponent))
+                .ToList();
+
+            if (newAddiction.Any())
+            {
+                await dbManufacturerComponent.ManufacturerComponent.AddRangeAsync(newAddiction);
+                await dbManufacturerComponent.SaveChangesAsync();
+            }
+        }
+
+        // Метод переноса данных о принадлежности номенклатуры и единицы измерения
+        private async Task CopyUnitMeasurementComponentAsync(HandyDbContext dbHandyDbContext, UnitMeasurementComponentContext dbUnitMeasurementComponent)
+        {
+            var addiction = await dbHandyDbContext.UnitMeasurementComponent.ToListAsync();
+            var existingGuids = await dbUnitMeasurementComponent.UnitMeasurementComponent
+                    .Select(c => c.GuidIdComponent)
+                    .ToListAsync();
+
+            var newAddiction = addiction
+                .Where(c => !existingGuids.Contains(c.GuidIdComponent))
+                .ToList();
+
+            if (newAddiction.Any())
+            {
+                await dbUnitMeasurementComponent.UnitMeasurementComponent.AddRangeAsync(newAddiction);
+                await dbUnitMeasurementComponent.SaveChangesAsync();
+            }
+        }
+
+        // Метод копирования базы данных о ценах поставщиков на номенклатуру
+        private async Task CopyPriceComponentAsync(
+            HandyDbContext dbHandyDbContext,
+            SupplyPriceComponentContext dbSupplyPriceComponent,
+            SupplyProviderContext dbSupplyProvider)
+        {
+            // Загрузили все предложения из исходной базы
+            var offers = await dbHandyDbContext.PriceComponent.ToListAsync();
+
+            // Загрузили Guid поставщиков, которые уже есть в целевой базе
+            var existingProviderGuids = await dbSupplyProvider.SupplyProvider
+                .Select(p => p.GuidIdProvider)
+                .ToListAsync();
+
+            // Загрузили Guid компонентов, которые уже есть в целевой базе
+            var existingGuids = await dbSupplyPriceComponent.PriceComponent
+                .Select(c => c.GuidIdComponent)
+                .ToListAsync();
+
+            // Оставляем только те предложения, которых ещё нет в целевой базе и у которых поставщик уже есть
+            var newOffers = offers
+                .Where(c => !existingGuids.Contains(c.GuidIdComponent) &&
+                            existingProviderGuids.Contains(c.GuidIdProvider))
+                .ToList();
+
+            if (newOffers.Any())
+            {
+                await dbSupplyPriceComponent.PriceComponent.AddRangeAsync(newOffers);
+                await dbSupplyPriceComponent.SaveChangesAsync();
+            }
+        }
 
         // Метод отправки запроса на добавление новой компании провайдера
         private async Task AddProviderViaApiAsync(string? guidIdProvider, string? nameProvider, long? innProvider)

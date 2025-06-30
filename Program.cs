@@ -133,7 +133,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseCors("AllowAll");
+// app.UseCors("AllowAll"); // Если все кому не лень запрашивают
+app.UseCors("AllowOnlySupply"); // только конкретному сайту
 
 app.UseAuthentication();
 app.UseAuthorization();

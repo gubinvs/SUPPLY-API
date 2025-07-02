@@ -65,8 +65,11 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<EmailSender>();
 
 builder.Services.AddHostedService<EmailCleanupHostedService>();
-builder.Services.AddHostedService<DuplicateCleanupService>();
-builder.Services.AddHostedService<DataCopyService>();
+builder.Services.AddHostedService<DuplicateCleanupComponentService>();// удаление дублей номенклатуры
+builder.Services.AddHostedService<RemoveDuplicatesManufacturer>();// удаление дублей производителей
+// builder.Services.AddHostedService<DataCopyService>();
+
+
 
 // --- Проверка строк подключения ---
 var defaultConn = builder.Configuration.GetConnectionString("AppDatabase");

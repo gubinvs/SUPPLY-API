@@ -70,7 +70,6 @@ builder.Services.AddHostedService<RemoveDuplicatesManufacturer>();// удале�
 // builder.Services.AddHostedService<DataCopyService>();
 
 
-
 // --- Проверка строк подключения ---
 var defaultConn = builder.Configuration.GetConnectionString("AppDatabase");
 var handyConn = builder.Configuration.GetConnectionString("HandyDatabase");

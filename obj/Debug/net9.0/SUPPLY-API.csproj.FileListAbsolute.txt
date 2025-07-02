@@ -20,7 +20,6 @@
 /home/gubinvs/SUPPLY-API/bin/Debug/net9.0/Azure.Core.dll
 /home/gubinvs/SUPPLY-API/bin/Debug/net9.0/Azure.Identity.dll
 /home/gubinvs/SUPPLY-API/bin/Debug/net9.0/ClosedXML.dll
-/home/gubinvs/SUPPLY-API/bin/Debug/net9.0/Dadata.dll
 /home/gubinvs/SUPPLY-API/bin/Debug/net9.0/DocumentFormat.OpenXml.dll
 /home/gubinvs/SUPPLY-API/bin/Debug/net9.0/EPPlus.dll
 /home/gubinvs/SUPPLY-API/bin/Debug/net9.0/EPPlus.Interfaces.dll

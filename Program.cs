@@ -65,8 +65,8 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<EmailSender>();
 
 builder.Services.AddHostedService<EmailCleanupHostedService>();
-builder.Services.AddHostedService<DuplicateCleanupComponentService>();// удаление дублей номенклатуры
-builder.Services.AddHostedService<RemoveDuplicatesManufacturer>();// удаление дублей производителей
+builder.Services.AddHostedService<DuplicateCleanupComponentService>(); // удаление дублей номенклатуры
+builder.Services.AddHostedService<RemoveDuplicatesManufacturer>(); // удаление дублей производителей
 // builder.Services.AddHostedService<DataCopyService>();
 
 

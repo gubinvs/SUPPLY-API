@@ -16,6 +16,7 @@ namespace SUPPLY_API
         /// Запускается автоматически раз в сутки.
         /// </summary>
         /// 
+        
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<RemoveDuplicatesManufacturer> _logger;
 
@@ -27,60 +28,68 @@ namespace SUPPLY_API
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            // 🔹 Немедленный запуск (для отладки)
+            await DoWorkAsync(stoppingToken);
+
             while (!stoppingToken.IsCancellationRequested)
             {
+                // ⏱ Пауза на 1 день
                 await Task.Delay(TimeSpan.FromDays(1), stoppingToken);
 
-                using var scope = _serviceProvider.CreateScope();
-                var db = scope.ServiceProvider.GetRequiredService<SupplyManufacturerContext>();
-                var dbManufact = scope.ServiceProvider.GetRequiredService<ManufacturerComponentContext>();
+                // 🔁 Повтор выполнения
+                await DoWorkAsync(stoppingToken);
+            }
+        }
 
-                try
+        private async Task DoWorkAsync(CancellationToken stoppingToken)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<SupplyManufacturerContext>();
+            var dbManufact = scope.ServiceProvider.GetRequiredService<ManufacturerComponentContext>();
+
+            try
+            {
+                var grouped = await db.SupplyManufacturer
+                    .GroupBy(c => c.NameManufacturer)
+                    .Where(g => g.Count() > 1)
+                    .ToListAsync(stoppingToken);
+
+                foreach (var group in grouped)
                 {
-                    var grouped = await db.SupplyManufacturer
-                        .GroupBy(c => c.NameManufacturer)
-                        .Where(g => g.Count() > 1)
-                        .ToListAsync(stoppingToken);
+                    var toKeep = group.First(); // основная запись
+                    var toRemove = group.Skip(1).ToList(); // дубликаты
 
-                    foreach (var group in grouped)
+                    foreach (var duplicate in toRemove)
                     {
-                        var toKeep = group.First(); // основная запись
-                        var toRemove = group.Skip(1).ToList(); // дубликаты
-
-                        foreach (var duplicate in toRemove)
+                        var manufact = await dbManufact.ManufacturerComponent
+                            .FirstOrDefaultAsync(m => m.GuidIdComponent == duplicate.GuidIdManufacturer, stoppingToken);
+                        if (manufact != null)
                         {
+                            var existing = await dbManufact.ManufacturerComponent
+                                .AnyAsync(m => m.GuidIdComponent == toKeep.GuidIdManufacturer, stoppingToken);
 
-                            // Переносим производителя
-                            var manufact = await dbManufact.ManufacturerComponent
-                                .FirstOrDefaultAsync(m => m.GuidIdComponent == duplicate.GuidIdManufacturer, stoppingToken);
-                            if (manufact != null)
+                            if (!existing)
                             {
-                                var existing = await dbManufact.ManufacturerComponent
-                                    .AnyAsync(m => m.GuidIdComponent == toKeep.GuidIdManufacturer, stoppingToken);
-
-                                if (!existing)
-                                {
-                                    manufact.GuidIdComponent = toKeep.GuidIdManufacturer;
-                                }
-                                else
-                                {
-                                    dbManufact.ManufacturerComponent.Remove(manufact);
-                                }
+                                manufact.GuidIdComponent = toKeep.GuidIdManufacturer;
                             }
-
-                            db.SupplyManufacturer.Remove(duplicate);
+                            else
+                            {
+                                dbManufact.ManufacturerComponent.Remove(manufact);
+                            }
                         }
 
-                        _logger.LogInformation("Объединены и очищены дубли для: {VendorCode}", group.Key);
+                        db.SupplyManufacturer.Remove(duplicate);
                     }
 
-                    await dbManufact.SaveChangesAsync(stoppingToken);
-                    await db.SaveChangesAsync(stoppingToken);
+                    _logger.LogInformation("Объединены и очищены дубли для: {VendorCode}", group.Key);
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Ошибка при очистке дублей компонентов");
-                }
+
+                await dbManufact.SaveChangesAsync(stoppingToken);
+                await db.SaveChangesAsync(stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при очистке дублей компонентов");
             }
         }
     }

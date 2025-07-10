@@ -78,10 +78,11 @@ namespace SUPPLY_API
                     .Where(pr => providerIds.Contains(pr.GuidIdProvider))
                     .ToListAsync();
 
-                // Отфильтровали по максимальной цене
+                // Находим максимальную цену
                 int? maxPrice = offers.Max(o => o.PriceComponent);
 
-                var offerWithNames = offers
+                // Отбираем только первое предложение с максимальной ценой
+                var offerWithName = offers
                     .Where(o => o.PriceComponent == maxPrice)
                     .Select(offer =>
                     {
@@ -93,8 +94,8 @@ namespace SUPPLY_API
                             offer.DeliveryTimeComponent,
                             offer.SaveDataPrice
                         };
-                    }).ToList();
-
+                    })
+                    .FirstOrDefault();
 
                 // Загрузили данные о производителе
                 var manufacturerComponent = await _dbManufact.ManufacturerComponent
@@ -127,7 +128,7 @@ namespace SUPPLY_API
                 {
                     Article = article,
                     NameComponent = component.NameComponent,
-                    Offers = offerWithNames,
+                    Offers = offerWithName,
                     Manufacturer = manufacturerName,
                     Unit = unitName
                 });

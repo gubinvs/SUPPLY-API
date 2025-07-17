@@ -1,8 +1,7 @@
 namespace SUPPLY_API
 {
-    public class PurchaseComponentDb
+    public class PurchaseComponent
     {
-        public int Id { get; set; }
         public string? GuidIdPurchase { get; set; }
         public string? GuidIdComponent { get; set; }
         public string? VendorCodeComponent { get; set; }
@@ -11,7 +10,5 @@ namespace SUPPLY_API
         public int? PurchaseItemPrice { get; set; }
         public string? BestComponentProvider { get; set; }
         public string? DeliveryTimeComponent { get; set; }
-
-        public PurchaseComponentDb () { }
     }
 }

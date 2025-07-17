@@ -24,9 +24,6 @@ namespace SUPPLY_API
         // Предложенный срок поставки номенклатуры
         public string? DeliveryTimeComponent { get; set; }
 
-
-
-
         public PurchaseComponentDb() { }
     }
 }

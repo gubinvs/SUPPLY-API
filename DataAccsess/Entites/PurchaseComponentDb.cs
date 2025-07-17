@@ -15,6 +15,16 @@ namespace SUPPLY_API
         // Количество номенклатуры в закупке
         public int? RequiredQuantityItem { get; set; }
 
+        // Стоимость номенклатуры
+        public int? PurchaseItemPrice { get; set; }
+
+        // Выбранный лучший поставщик для этой номенклатуры
+        public string? BestComponentProvider { get; set; }
+
+        // Предложенный срок поставки номенклатуры
+        public string? DeliveryTimeComponent { get; set; }
+
+
 
 
         public PurchaseComponentDb() { }

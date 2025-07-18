@@ -9,6 +9,7 @@ namespace SUPPLY_API
     /// 
     public record SaveSupplyPurchaseModel
     (
+        string guidIdCollaborator,
         string guidIdPurchase,
         string purchaseId,
         string purchaseName,
@@ -18,6 +19,7 @@ namespace SUPPLY_API
     );
 
     public record PurchaseItemModel (
+        string guidIdCollaborator,
         string guidIdComponent,
         string vendorCodeComponent,
         string nameComponent,

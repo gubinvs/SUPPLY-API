@@ -33,11 +33,13 @@ namespace SUPPLY_API
 
             try
             {
+                // Поиск существующей закупки
                 var existingPurchase = await _db.SupplyPurchase
                     .FirstOrDefaultAsync(p => p.GuidIdPurchase == model.guidIdPurchase);
 
                 if (existingPurchase == null)
                 {
+                    // Создание новой закупки
                     existingPurchase = new SupplyPurchaseDb
                     {
                         GuidIdPurchase = model.guidIdPurchase,
@@ -51,6 +53,7 @@ namespace SUPPLY_API
                 }
                 else
                 {
+                    // Обновление существующей закупки
                     existingPurchase.PurchaseId = model.purchaseId;
                     existingPurchase.PurchaseName = model.purchaseName;
                     existingPurchase.PurchasePrice = model.purchasePrice;
@@ -58,6 +61,7 @@ namespace SUPPLY_API
 
                     _db.SupplyPurchase.Update(existingPurchase);
 
+                    // Удаление старых компонентов закупки
                     var oldItems = await _db.PurchaseComponent
                         .Where(pc => pc.GuidIdPurchase == model.guidIdPurchase)
                         .ToListAsync();
@@ -65,6 +69,7 @@ namespace SUPPLY_API
                     _db.PurchaseComponent.RemoveRange(oldItems);
                 }
 
+                // Добавление новых компонентов закупки
                 var newItems = model.purchaseItem.Select(item => new PurchaseComponentDb
                 {
                     GuidIdPurchase = model.guidIdPurchase,
@@ -80,6 +85,25 @@ namespace SUPPLY_API
                 await _db.PurchaseComponent.AddRangeAsync(newItems);
 
                 await _db.SaveChangesAsync();
+
+                // Проверка привязки в PurchaseAuthorization
+                var existingAuthorization = await _db.PurchaseAuthorization
+                    .FirstOrDefaultAsync(auth =>
+                        auth.GuidIdCollaborator == model.guidIdCollaborator &&
+                        auth.GuidIdPurchase == model.guidIdPurchase);
+
+                if (existingAuthorization == null)
+                {
+                    var newAuthorization = new PurchaseAuthorizationDb
+                    {
+                        GuidIdCollaborator = model.guidIdCollaborator,
+                        GuidIdPurchase = model.guidIdPurchase,
+                    };
+
+                    _db.PurchaseAuthorization.Add(newAuthorization);
+                    await _db.SaveChangesAsync();
+                }
+
                 await transaction.CommitAsync();
 
                 return Ok(new { message = "Закупка и её компоненты успешно сохранены." });

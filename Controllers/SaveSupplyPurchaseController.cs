@@ -38,7 +38,7 @@ namespace SUPPLY_API
 
                 if (existingPurchase == null)
                 {
-                    existingPurchase = new SupplyPurchase
+                    existingPurchase = new SupplyPurchaseDb
                     {
                         GuidIdPurchase = model.guidIdPurchase,
                         PurchaseId = model.purchaseId,
@@ -65,7 +65,7 @@ namespace SUPPLY_API
                     _db.PurchaseComponent.RemoveRange(oldItems);
                 }
 
-                var newItems = model.purchaseItem.Select(item => new PurchaseComponent
+                var newItems = model.purchaseItem.Select(item => new PurchaseComponentDb
                 {
                     GuidIdPurchase = model.guidIdPurchase,
                     GuidIdComponent = item.guidIdComponent,

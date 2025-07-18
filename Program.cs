@@ -67,7 +67,7 @@ builder.Services.AddScoped<EmailSender>();
 builder.Services.AddHostedService<EmailCleanupHostedService>();
 builder.Services.AddHostedService<DuplicateCleanupComponentService>(); // удаление дублей номенклатуры
 builder.Services.AddHostedService<RemoveDuplicatesManufacturer>(); // удаление дублей производителей
-// builder.Services.AddHostedService<DataCopyService>();
+builder.Services.AddHostedService<DataCopyService>();
 
 
 // --- Проверка строк подключения ---
@@ -87,7 +87,7 @@ builder.Services.AddDbContext<CompanyCollaboratorContext>(opt => opt.UseMySql(de
 builder.Services.AddDbContext<DeliveryAddressContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
 builder.Services.AddDbContext<ManufacturerComponentContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
 builder.Services.AddDbContext<HandyDbContext>(opt => opt.UseMySql(handyConn, ServerVersion.AutoDetect(handyConn)));
-builder.Services.AddDbContext<HandyDbContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
+builder.Services.AddDbContext<SupplyContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
 
 
 

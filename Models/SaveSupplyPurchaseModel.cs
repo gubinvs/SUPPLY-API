@@ -19,7 +19,6 @@ namespace SUPPLY_API
     );
 
     public record PurchaseItemModel (
-        string guidIdCollaborator,
         string guidIdComponent,
         string vendorCodeComponent,
         string nameComponent,

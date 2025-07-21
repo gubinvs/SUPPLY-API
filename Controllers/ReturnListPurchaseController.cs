@@ -43,7 +43,7 @@ namespace SUPPLY_API
             var purchaseGuids = myPurchases.Select(p => p.GuidIdPurchase).ToList();
 
             // 2. Достаём закупки
-            var purchases = await _db.PurchaseComponent
+            var purchases = await _db.SupplyPurchase
                 .Where(p => purchaseGuids.Contains(p.GuidIdPurchase))
                 .ToListAsync();
 
@@ -59,25 +59,36 @@ namespace SUPPLY_API
                 .Where(o => componentGuids.Contains(o.GuidIdComponent))
                 .ToListAsync();
 
-            // 5. Сборка результата
+            // 5. Поставщики по предложениям
+            var providerGuids = offers
+                .Where(o => !string.IsNullOrEmpty(o.GuidIdProvider))
+                .Select(o => o.GuidIdProvider!)
+                .Distinct()
+                .ToList();
+
+            var providers = await _db.SupplyProvider
+                .Where(p => p.GuidIdProvider != null && providerGuids.Contains(p.GuidIdProvider))
+                .ToDictionaryAsync(p => p.GuidIdProvider!, p => p.NameProvider);
+
+
+            // 6. Сборка результата
             var result = purchases.Select(p => new
             {
                 guidIdPurchase = p.GuidIdPurchase,
                 purchaseId = p.PurchaseId,
                 purchaseName = p.PurchaseName,
                 purchasePrice = p.PurchasePrice,
-                purchaseCostomer = p.PurchaseCustomer,
+                purchaseCostomer = p.PurchaseCostomer,
                 purchaseItem = components
                     .Where(c => c.GuidIdPurchase == p.GuidIdPurchase)
                     .Select(c =>
                     {
-                        // Все предложения по компоненту
                         var offersForComponent = offers
                             .Where(o => o.GuidIdComponent == c.GuidIdComponent)
-                            .OrderBy(o => o.PriceComponent) // ЗАМЕНИ если поле называется иначе
+                            .OrderBy(o => o.PriceComponent)
                             .ToList();
 
-                        var bestOffer = offersForComponent.FirstOrDefault(); // самое дешевое предложение
+                        var bestOffer = offersForComponent.FirstOrDefault();
 
                         return new
                         {
@@ -86,18 +97,23 @@ namespace SUPPLY_API
                             vendorCodeComponent = c.VendorCodeComponent,
                             nameComponent = c.NameComponent,
                             requiredQuantityItem = c.RequiredQuantityItem,
-                            purchaseItemPrice = bestOffer?.PriceComponent ?? 0, // минимальная цена
-                            bestComponentProvider = bestOffer?.ProviderName ?? string.Empty, // поставщик из минимального предложения
-                            deliveryTimeComponent = bestOffer?.DeliveryTime ?? string.Empty, // срок поставки лучшего предложения
+                            purchaseItemPrice = bestOffer?.PriceComponent ?? 0,
+                            bestComponentProvider = (bestOffer?.GuidIdProvider != null && providers.ContainsKey(bestOffer.GuidIdProvider))
+                                ? providers[bestOffer.GuidIdProvider]
+                                : string.Empty,
+                            deliveryTimeComponent = bestOffer?.DeliveryTimeComponent ?? string.Empty,
                             otherOffers = offersForComponent
-                                .Skip(1) // исключаем лучшее
+                                .Skip(1)
                                 .Select(o => new
                                 {
                                     guidIdComponent = o.GuidIdComponent,
-                                    purchaseItemPrice = o.Price,
-                                    bestComponentProvider = o.ProviderName,
-                                    deliveryTimeComponent = o.DeliveryTime
-                                }).ToList()
+                                    purchaseItemPrice = o.PriceComponent,
+                                    bestComponentProvider = (o.GuidIdProvider != null && providers.ContainsKey(o.GuidIdProvider))
+                                        ? providers[o.GuidIdProvider]
+                                        : string.Empty,
+                                    deliveryTimeComponent = o.DeliveryTimeComponent
+                                })
+                                .ToList()
                         };
                     })
                     .ToList()
@@ -105,7 +121,6 @@ namespace SUPPLY_API
 
             return Ok(result);
         }
-
 
     }
 }

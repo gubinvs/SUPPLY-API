@@ -37,19 +37,20 @@ namespace SUPPLY_API
             if (myPurchases == null || !myPurchases.Any())
                 return NotFound("Нет доступных закупок для данного пользователя.");
 
+            // Запоминаем GuidIdPurchase - идентификаторы закупок
             var purchaseGuids = myPurchases.Select(p => p.GuidIdPurchase).ToList();
 
-            // 2. Достаём закупки
+            // 2. Достаём закупки на основе GuidIdPurchase
             var purchases = await _db.SupplyPurchase
                 .Where(p => purchaseGuids.Contains(p.GuidIdPurchase))
                 .ToListAsync();
 
-            // 3. Компоненты в этих закупках
+            // 3. Компоненты в этих закупках (номенклатура входящая в состав закупки)
             var components = await _db.PurchaseComponent
                 .Where(c => purchaseGuids.Contains(c.GuidIdPurchase))
                 .ToListAsync();
 
-            // 4. Все предложения по компонентам
+            // 4. Все предложения по номенклатуре
             var componentGuids = components.Select(c => c.GuidIdComponent).Distinct().ToList();
 
             var offers = await _db.PriceComponent

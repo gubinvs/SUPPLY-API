@@ -4,23 +4,21 @@ using Microsoft.EntityFrameworkCore;
 namespace SUPPLY_API
 {
     /// <summary>
-    /// Контроллер возвращает на запрос данные о всех закупках доступных данному пользователю
+    /// Контроллер возвращает на запрос данные о всех закупках, доступных данному пользователю
     /// </summary>
-    /// 
     [ApiController]
     [Route("api/[controller]/{guidIdCollaborator}")]
     public class ReturnListPurchaseController : ControllerBase
     {
-
         private readonly ILogger<ReturnListPurchaseController> _logger;
 
         // База данных с информацией о поставщиках
         private readonly SupplyContext _db;
 
-        public ReturnListPurchaseController (
-                ILogger<ReturnListPurchaseController> logger,
-                SupplyContext db
-            )
+        public ReturnListPurchaseController(
+            ILogger<ReturnListPurchaseController> logger,
+            SupplyContext db
+        )
         {
             _logger = logger;
             _db = db;
@@ -45,14 +43,13 @@ namespace SUPPLY_API
                 .Where(p => purchaseGuids.Contains(p.GuidIdPurchase))
                 .ToListAsync();
 
-            // 3. Компоненты в этих закупках (номенклатура входящая в состав закупки)
+            // 3. Компоненты в этих закупках (номенклатура, входящая в состав закупки)
             var components = await _db.PurchaseComponent
                 .Where(c => purchaseGuids.Contains(c.GuidIdPurchase))
                 .ToListAsync();
 
-            // 4. Все предложения по номенклатуре
+            // 4. Все предложения по номенклатуре на основе GuidIdComponent
             var componentGuids = components.Select(c => c.GuidIdComponent).Distinct().ToList();
-
             var offers = await _db.PriceComponent
                 .Where(o => componentGuids.Contains(o.GuidIdComponent))
                 .ToListAsync();
@@ -68,7 +65,6 @@ namespace SUPPLY_API
                 .Where(p => p.GuidIdProvider != null && providerGuids.Contains(p.GuidIdProvider))
                 .ToDictionaryAsync(p => p.GuidIdProvider!, p => p.NameProvider);
 
-
             // 6. Сборка результата
             var result = purchases.Select(p => new
             {
@@ -81,12 +77,10 @@ namespace SUPPLY_API
                     .Where(c => c.GuidIdPurchase == p.GuidIdPurchase)
                     .Select(c =>
                     {
+                        // Предложения по данной номенклатуре
                         var offersForComponent = offers
                             .Where(o => o.GuidIdComponent == c.GuidIdComponent)
-                            .OrderBy(o => o.PriceComponent)
                             .ToList();
-
-                        var bestOffer = offersForComponent.FirstOrDefault();
 
                         return new
                         {
@@ -95,23 +89,22 @@ namespace SUPPLY_API
                             vendorCodeComponent = c.VendorCodeComponent,
                             nameComponent = c.NameComponent,
                             requiredQuantityItem = c.RequiredQuantityItem,
-                            purchaseItemPrice = bestOffer?.PriceComponent ?? 0,
-                            bestComponentProvider = (bestOffer?.GuidIdProvider != null && providers.ContainsKey(bestOffer.GuidIdProvider))
-                                ? providers[bestOffer.GuidIdProvider]
-                                : string.Empty,
-                            deliveryTimeComponent = bestOffer?.DeliveryTimeComponent ?? string.Empty,
-                            otherOffers = offersForComponent
-                                .Skip(1)
-                                .Select(o => new
-                                {
-                                    guidIdComponent = o.GuidIdComponent,
-                                    purchaseItemPrice = o.PriceComponent,
-                                    bestComponentProvider = (o.GuidIdProvider != null && providers.ContainsKey(o.GuidIdProvider))
-                                        ? providers[o.GuidIdProvider]
-                                        : string.Empty,
-                                    deliveryTimeComponent = o.DeliveryTimeComponent
-                                })
-                                .ToList()
+
+                            // Используем сохранённую в компоненте информацию, а не выбираем "лучшее"
+                            purchaseItemPrice = c.PurchaseItemPrice ?? 0,
+                            bestComponentProvider = c.BestComponentProvider ?? string.Empty,
+                            deliveryTimeComponent = c.DeliveryTimeComponent ?? string.Empty,
+
+                            // Все остальные предложения
+                            otherOffers = offersForComponent.Select(o => new
+                            {
+                                guidIdComponent = o.GuidIdComponent,
+                                purchaseItemPrice = o.PriceComponent,
+                                bestComponentProvider = (o.GuidIdProvider != null && providers.ContainsKey(o.GuidIdProvider))
+                                    ? providers[o.GuidIdProvider]
+                                    : string.Empty,
+                                deliveryTimeComponent = o.DeliveryTimeComponent
+                            }).ToList()
                         };
                     })
                     .ToList()
@@ -119,6 +112,5 @@ namespace SUPPLY_API
 
             return Ok(result);
         }
-
     }
 }

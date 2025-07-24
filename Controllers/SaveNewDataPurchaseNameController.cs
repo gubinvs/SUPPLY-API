@@ -42,6 +42,7 @@ namespace SUPPLY_API
 
                 if (existingPurchase == null)
                 {
+                    
                     // Создание новой закупки
                     existingPurchase = new SupplyPurchaseDb
                     {

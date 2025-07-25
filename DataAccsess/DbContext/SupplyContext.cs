@@ -20,6 +20,7 @@ namespace SUPPLY_API
         public DbSet<PurchaseComponentDb> PurchaseComponent { get; set; } = null!;
         public DbSet<PurchaseAuthorizationDb> PurchaseAuthorization { get; set; } = null!;
         public DbSet<PriceDb> PriceComponent { get; set; } = null!;
+        public DbSet<CollaboratorSystemDb> CollaboratorSystem { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -70,6 +71,11 @@ namespace SUPPLY_API
                pc.HasKey(u => u.Id);
                pc.ToTable("PriceComponent");
            }));
+            modelBuilder.Entity<CollaboratorSystemDb>(pc =>
+            {
+                pc.HasKey(u => u.Id);
+                pc.ToTable("CollaboratorSystem");
+            });
 
 
         }

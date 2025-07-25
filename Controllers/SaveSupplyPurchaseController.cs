@@ -115,5 +115,50 @@ namespace SUPPLY_API
                 return StatusCode(500, new { message = "Произошла ошибка при сохранении." });
             }
         }
+
+        [HttpDelete("{guidIdPurchase}")]
+        public async Task<IActionResult> DeleteSupplyPurchase(string guidIdPurchase)
+        {
+            using var transaction = await _db.Database.BeginTransactionAsync();
+
+            try
+            {
+                // Поиск закупки
+                var purchase = await _db.SupplyPurchase
+                    .FirstOrDefaultAsync(p => p.GuidIdPurchase == guidIdPurchase);
+
+                if (purchase == null)
+                {
+                    return NotFound(new { message = "Закупка не найдена." });
+                }
+
+                // Удаление компонентов закупки
+                var components = await _db.PurchaseComponent
+                    .Where(c => c.GuidIdPurchase == guidIdPurchase)
+                    .ToListAsync();
+                _db.PurchaseComponent.RemoveRange(components);
+
+                // Удаление авторизаций
+                var authorizations = await _db.PurchaseAuthorization
+                    .Where(a => a.GuidIdPurchase == guidIdPurchase)
+                    .ToListAsync();
+                _db.PurchaseAuthorization.RemoveRange(authorizations);
+
+                // Удаление самой закупки
+                _db.SupplyPurchase.Remove(purchase);
+
+                await _db.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return Ok(new { message = "Закупка и все связанные данные удалены." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при удалении закупки");
+                await transaction.RollbackAsync();
+                return StatusCode(500, new { message = "Произошла ошибка при удалении." });
+            }
+        }
+
     }
 }

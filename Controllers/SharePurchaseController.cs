@@ -40,9 +40,10 @@ namespace SUPPLY_API
 
             try
             {
+               
                 // Поиск сотрудника по email
                 var collaborator = await _db.CollaboratorSystem
-                    .FirstOrDefaultAsync(c => c.EmailCollaborator.ToLower() == model.EmailCollaborator.ToLower());
+                    .FirstOrDefaultAsync(c => c.EmailCollaborator == model.EmailCollaborator.ToLower());
 
                 if (collaborator == null)
                 {

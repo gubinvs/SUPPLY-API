@@ -14,14 +14,17 @@ namespace SUPPLY_API
     {
         private readonly ILogger<RequestInvoiceController> _logger;
         private readonly SupplyContext _db;
+        private readonly EmailSender _emailSender;
 
-        public RequestInvoiceController (
+        public RequestInvoiceController(
                 ILogger<RequestInvoiceController> logger,
-                SupplyContext db
+                SupplyContext db,
+                EmailSender emailSender
             )
         {
             _logger = logger;
             _db = db;
+            _emailSender = emailSender;
         }
 
 
@@ -53,10 +56,22 @@ namespace SUPPLY_API
                 await _db.SupplyOrderUser.AddAsync(supplyOrder);
                 await _db.SaveChangesAsync();
 
-               
+
                 // Здесь можно добавить логику отправки email/уведомления
                 // await _notificationService.SendEmail(...);
+                // Формируем сообщение с новым паролем
+                // string body = "Тело письма";
                 
+                
+                // Добавить зависимости OrderUserAuthorization для того, кто отправил запрос и для того кто его получет
+
+                // Отправляем новый пароль на почту тому пользователю, которому отправили запрос счета
+                // _emailSender.SendEmail(model.Email, "Запрос счета, создание нового заказа", body);
+
+
+
+
+
                 return Ok(new { message = "Заказ успешно записан в базу данных", id = supplyOrder.Id });
             }
             catch (Exception ex)

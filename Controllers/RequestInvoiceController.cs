@@ -35,7 +35,9 @@ namespace SUPPLY_API
                 return BadRequest(ModelState);
 
             var user = await _db.CollaboratorSystem
-                .FirstOrDefaultAsync(u => u. == model.guidIdCollaborator);
+                .FirstOrDefaultAsync(u => u.GuidIdCollaborator == model.guidIdCollaborator);
+
+            
 
             if (user == null)
                 return NotFound(new { message = "Пользователь не найден" });

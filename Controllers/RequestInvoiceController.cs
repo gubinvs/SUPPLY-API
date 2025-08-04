@@ -32,7 +32,7 @@ namespace SUPPLY_API
                 return BadRequest(ModelState);
 
             var user = await _db.CollaboratorSystem
-                .FirstOrDefaultAsync(u => u.GuidIdCollaborator == model.guidIdCollaborator);
+                .FirstOrDefaultAsync(u => u. == model.guidIdCollaborator);
 
             if (user == null)
                 return NotFound(new { message = "Пользователь не найден" });
@@ -48,14 +48,15 @@ namespace SUPPLY_API
                 DeliveryTimeComponent = DateTime.UtcNow.AddDays(5)
             };
 
-            await _db.SupplyOrderUser.AddAsync(supplyOrder);
-
             try
             {
                 await _db.SupplyOrderUser.AddAsync(supplyOrder);
                 await _db.SaveChangesAsync();
 
-
+               
+                // Здесь можно добавить логику отправки email/уведомления
+                // await _notificationService.SendEmail(...);
+                
                 return Ok(new { message = "Заказ успешно записан в базу данных", id = supplyOrder.Id });
             }
             catch (Exception ex)

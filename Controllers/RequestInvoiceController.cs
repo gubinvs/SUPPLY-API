@@ -64,7 +64,6 @@ namespace SUPPLY_API
                 await _db.SaveChangesAsync();
 
 
-
                 foreach (var e in model.purchaseItem)
                 {
                     var newOrder = new SupplyOrderUserComponentDb
@@ -80,8 +79,6 @@ namespace SUPPLY_API
                     await _db.SupplyOrderUserComponent.AddAsync(newOrder);
                     await _db.SaveChangesAsync();
                 }
-
-
 
                 // Пропишем зависимости для доступа к заказам для пользователя заказчика
                 var userAccess = new OrderUserAuthorizationDb

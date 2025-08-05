@@ -50,7 +50,7 @@ namespace SUPPLY_API
                 return BadRequest(new { message = "Длины списков не совпадают" });
             }
 
-            var createdOrders = new List<SupplyOrderDb>();
+            var createdOrders = new SupplyOrderDb();
             string newGuidIdSupplyOrder = Guid.NewGuid().ToString();
 
             try
@@ -69,29 +69,43 @@ namespace SUPPLY_API
 
                     createdOrders.Add(newOrder);
                     await _db.SupplyOrderUser.AddAsync(newOrder);
+                    await _db.SaveChangesAsync();
                 }
 
+                // Пропишем зависимости для доступа к заказам для пользователя заказчика
+                var userAccess = new OrderUserAuthorizationDb
+                {
+                    GuidIdSupplyOrderUser = newGuidIdSupplyOrder,
+                    GuidIdCollaborator = model.guidIdCollaborator
+                };
+
+                await _db.OrderUserAuthorization.AddAsync(userAccess);
                 await _db.SaveChangesAsync();
+
+                // И для администратора
+                var adminUserAccess = new OrderUserAuthorizationDb
+                {
+                    GuidIdSupplyOrderUser = newGuidIdSupplyOrder,
+                    GuidIdCollaborator = "b3c406b3-bbca-414a-959f-ee774655718a"
+                };
+
+                await _db.OrderUserAuthorization.AddAsync(userAccess);
+                await _db.SaveChangesAsync();
+
 
                 // Пример: отправка письма админу
                 string emailAdmin = "gubinvs@gmail.com";
-                string body = $"Создано заказов: {createdOrders.Count}";
+                string body = $"Создан заказ: {newGuidIdSupplyOrder}";
                 _emailSender.SendEmail(emailAdmin, "Запрос счета", body);
 
                 return Ok(new
                 {
-                    message = "Заказы успешно созданы",
-                    createdOrders = createdOrders.Select(o => new
-                    {
-                        o.Id,
-                        o.GuidIdSupplyOrder,
-                        o.VendorCodeComponent
-                    })
+                    message = "Заказ успешно создан"
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при создании заказов");
+                _logger.LogError(ex, "Ошибка при создании заказа");
                 return StatusCode(500, new { message = "Внутренняя ошибка сервера" });
             }
         }

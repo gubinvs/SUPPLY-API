@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using SUPPLY_API.Models; // Подключи свой namespace для моделей
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace SUPPLY_API
 {
-    // Контроллер принимает данные о составе закупки и рассылает запросы на выставление счетов, 
-    // компании котораю указана как поставщик. Если запрос приходит от FREE ПОЛЬЗОВАТЕЛЯ,
-    // запрос отправляется на один адрес и сохраняется в базе данных и больше не меняется
-    // в ответ отправляется сообщение о удачном или нет результате
-
     [ApiController]
     [Route("api/[controller]")]
     public class RequestInvoiceController : ControllerBase
@@ -16,24 +17,29 @@ namespace SUPPLY_API
         private readonly SupplyContext _db;
         private readonly EmailSender _emailSender;
 
+        private const double DefaultProfitability = 1.1;
+        private const int DefaultDeliveryDays = 5;
+        private const string AdminCollaboratorGuid = "b3c406b3-bbca-414a-959f-ee774655718a";
+        private const string AdminEmail = "gubinvs@gmail.com";
 
         public RequestInvoiceController(
-                ILogger<RequestInvoiceController> logger,
-                SupplyContext db,
-                EmailSender emailSender
-            )
+            ILogger<RequestInvoiceController> logger,
+            SupplyContext db,
+            EmailSender emailSender)
         {
             _logger = logger;
             _db = db;
             _emailSender = emailSender;
         }
 
-
-       [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> RequestInvoice([FromBody] RequestInvoiceModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (model.purchaseItem == null || !model.purchaseItem.Any())
+                return BadRequest(new { message = "Не указаны элементы закупки" });
 
             var user = await _db.CollaboratorSystem
                 .FirstOrDefaultAsync(u => u.GuidIdCollaborator == model.guidIdCollaborator);
@@ -41,14 +47,12 @@ namespace SUPPLY_API
             if (user == null)
                 return NotFound(new { message = "Пользователь не найден" });
 
-            var createdOrders = new SupplyOrderUserComponentDb();
             string newGuidIdSupplyOrder = Guid.NewGuid().ToString();
-            double profitability = 1.1; // Рентабельность по которой работает серви, также устанавливается и на frontende
 
-
+            using IDbContextTransaction transaction = await _db.Database.BeginTransactionAsync();
             try
             {
-                // Название заказа на основании закупки (спецификации)
+                // Создаем запись заказа
                 var newPurchase = new SupplyOrderUserDb
                 {
                     GuidIdSupplyOrder = newGuidIdSupplyOrder,
@@ -57,13 +61,10 @@ namespace SUPPLY_API
                     PurchaseName = model.purchaseName,
                     PurchasePrice = model.purchasePrice,
                     PurchaseCostomer = model.purchaseCostomer,
-
                 };
 
                 await _db.SupplyOrderUser.AddAsync(newPurchase);
                 await _db.SaveChangesAsync();
-
-
 
                 foreach (var e in model.purchaseItem)
                 {
@@ -73,49 +74,51 @@ namespace SUPPLY_API
                         VendorCodeComponent = e.VendorCodeComponent,
                         NameComponent = e.NameComponent,
                         QuantityComponent = e.RequiredQuantityItem,
-                        PriceComponent = Convert.ToInt32(e.PurchaseItemPrice * profitability), // Рентабельность по которой работает сервис
-                        DeliveryTimeComponent = DateTime.UtcNow.AddDays(5) // временно статично
+                        PriceComponent = Convert.ToInt32(e.PurchaseItemPrice * DefaultProfitability),
+                        DeliveryTimeComponent = DateTime.UtcNow.AddDays(DefaultDeliveryDays)
                     };
 
                     await _db.SupplyOrderUserComponent.AddAsync(newOrder);
-                    await _db.SaveChangesAsync();
                 }
 
+                await _db.SaveChangesAsync();
 
-
-                // Пропишем зависимости для доступа к заказам для пользователя заказчика
+                // Доступ заказчику
                 var userAccess = new OrderUserAuthorizationDb
                 {
                     GuidIdSupplyOrderUser = newGuidIdSupplyOrder,
                     GuidIdCollaborator = model.guidIdCollaborator
                 };
-
                 await _db.OrderUserAuthorization.AddAsync(userAccess);
-                await _db.SaveChangesAsync();
 
-                // И для администратора
+                // Доступ администратору
                 var adminUserAccess = new OrderUserAuthorizationDb
                 {
                     GuidIdSupplyOrderUser = newGuidIdSupplyOrder,
-                    GuidIdCollaborator = "b3c406b3-bbca-414a-959f-ee774655718a"
+                    GuidIdCollaborator = AdminCollaboratorGuid
                 };
+                await _db.OrderUserAuthorization.AddAsync(adminUserAccess);
 
-                await _db.OrderUserAuthorization.AddAsync(userAccess);
                 await _db.SaveChangesAsync();
+                await transaction.CommitAsync();
 
+                // Отправка письма
+                // var emailBody = $"Создан заказ: {newGuidIdSupplyOrder}\n" +
+                //                 $"Заказчик: {""} ({FullName})\n" +
+                //                 $"Спецификация: {model.purchaseName} на сумму {model.purchasePrice}₽";
+                // await _emailSender.SendEmail(AdminEmail, "Запрос счета", emailBody);
 
-                // Пример: отправка письма админу
-                string emailAdmin = "gubinvs@gmail.com";
-                string body = $"Создан заказ: {newGuidIdSupplyOrder}";
-                _emailSender.SendEmail(emailAdmin, "Запрос счета", body);
+                // _logger.LogInformation("Создан заказ {OrderId} пользователем {UserId}", newGuidIdSupplyOrder, user.GuidIdCollaborator);
 
                 return Ok(new
                 {
-                    message = "Заказ успешно создан"
+                    message = "Заказ успешно создан",
+                    orderId = newGuidIdSupplyOrder
                 });
             }
             catch (Exception ex)
             {
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "Ошибка при создании заказа");
                 return StatusCode(500, new { message = "Внутренняя ошибка сервера" });
             }

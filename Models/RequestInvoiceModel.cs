@@ -8,10 +8,10 @@ namespace SUPPLY_API
     public record RequestInvoiceModel
     (
         string guidIdCollaborator,
-        string vendorCodeComponent,
-        string nameComponent,
-        int quantityComponent,
-        int priceComponent,
-        string deliveryTimeComponent
+        List<string> vendorCodeComponent,
+        List<string> nameComponent,
+        List<int> quantityComponent,
+        List<int> priceComponent,
+        List<string> deliveryTimeComponent
     );
 };

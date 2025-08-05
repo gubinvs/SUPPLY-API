@@ -29,7 +29,7 @@ namespace SUPPLY_API
         }
 
 
-        [HttpPost]
+       [HttpPost]
         public async Task<IActionResult> RequestInvoice([FromBody] RequestInvoiceModel model)
         {
             if (!ModelState.IsValid)
@@ -41,47 +41,59 @@ namespace SUPPLY_API
             if (user == null)
                 return NotFound(new { message = "Пользователь не найден" });
 
-            var supplyOrder = new SupplyOrderDb
+            // Проверка на совпадение размеров списков
+            int itemCount = model.vendorCodeComponent.Count;
+            if (model.nameComponent.Count != itemCount || 
+                model.quantityComponent.Count != itemCount || 
+                model.priceComponent.Count != itemCount)
             {
-                GuidIdSupplyOrder = Guid.NewGuid().ToString(),
-                GuidIdCollaborator = model.guidIdCollaborator,
-                VendorCodeComponent = model.vendorCodeComponent,
-                NameComponent = model.nameComponent,
-                QuantityComponent = model.quantityComponent,
-                PriceComponent = model.priceComponent,
-                DeliveryTimeComponent = DateTime.UtcNow.AddDays(5) // Плюс пять дней к текущей дате
-            };
+                return BadRequest(new { message = "Длины списков не совпадают" });
+            }
+
+            var createdOrders = new List<SupplyOrderDb>();
+            string newGuidIdSupplyOrder = Guid.NewGuid().ToString();
 
             try
             {
-                await _db.SupplyOrderUser.AddAsync(supplyOrder);
+                for (int i = 0; i < itemCount; i++)
+                {
+                    var newOrder = new SupplyOrderDb
+                    {
+                        GuidIdSupplyOrder = newGuidIdSupplyOrder,
+                        VendorCodeComponent = model.vendorCodeComponent[i],
+                        NameComponent = model.nameComponent[i],
+                        QuantityComponent = model.quantityComponent[i],
+                        PriceComponent = model.priceComponent[i],
+                        DeliveryTimeComponent = DateTime.UtcNow.AddDays(5) // временно статично
+                    };
+
+                    createdOrders.Add(newOrder);
+                    await _db.SupplyOrderUser.AddAsync(newOrder);
+                }
+
                 await _db.SaveChangesAsync();
 
+                // Пример: отправка письма админу
+                string emailAdmin = "gubinvs@gmail.com";
+                string body = $"Создано заказов: {createdOrders.Count}";
+                _emailSender.SendEmail(emailAdmin, "Запрос счета", body);
 
-                // Здесь можно добавить логику отправки email/уведомления
-                // await _notificationService.SendEmail(...);
-                // Формируем сообщение с новым паролем
-                string EmailAdmin = "gubinvs@gmail.com";
-                string body = "Тело письма";
-
-
-                // Добавить зависимости OrderUserAuthorization (отображение в личном кабинете) 
-                // для того, кто отправил запрос и для того кто его получет
-
-                // Отправляем новый пароль на почту тому пользователю, которому отправили запрос счета
-                _emailSender.SendEmail(EmailAdmin, "Запрос счета, создание нового заказа", body);
-
-
-                return Ok(new { message = "Заказ успешно записан в базу данных", id = supplyOrder.Id });
+                return Ok(new
+                {
+                    message = "Заказы успешно созданы",
+                    createdOrders = createdOrders.Select(o => new
+                    {
+                        o.Id,
+                        o.GuidIdSupplyOrder,
+                        o.VendorCodeComponent
+                    })
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при создании заказа");
+                _logger.LogError(ex, "Ошибка при создании заказов");
                 return StatusCode(500, new { message = "Внутренняя ошибка сервера" });
             }
         }
-
-
-
     }
 }

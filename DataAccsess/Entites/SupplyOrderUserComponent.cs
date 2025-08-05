@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SUPPLY_API
 {
-    public class SupplyOrderUserComponentDb : DbContext
+    public class SupplyOrderUserComponentDb
     {
         public int Id { get; set; }
 

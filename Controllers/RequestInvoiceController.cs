@@ -45,7 +45,6 @@ namespace SUPPLY_API
             string newGuidIdSupplyOrder = Guid.NewGuid().ToString();
             double profitability = 1.1; // Рентабельность по которой работает серви, также устанавливается и на frontende
 
-
             try
             {
                 // Название заказа на основании закупки (спецификации)
@@ -69,10 +68,10 @@ namespace SUPPLY_API
                     var newOrder = new SupplyOrderUserComponentDb
                     {
                         GuidIdSupplyOrder = newGuidIdSupplyOrder,
-                        VendorCodeComponent = e.VendorCodeComponent,
-                        NameComponent = e.NameComponent,
-                        QuantityComponent = e.RequiredQuantityItem,
-                        PriceComponent = Convert.ToInt32(e.PurchaseItemPrice * profitability), // Рентабельность по которой работает сервис
+                        VendorCodeComponent = e.vendorCodeComponent,
+                        NameComponent = e.nameComponent,
+                        QuantityComponent = e.requiredQuantityItem,
+                        PriceComponent = (int)Math.Round(e.purchaseItemPrice * profitability), // Рентабельность по которой работает сервис
                         DeliveryTimeComponent = DateTime.UtcNow.AddDays(5) // временно статично
                     };
 

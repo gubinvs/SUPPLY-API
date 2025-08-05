@@ -1,8 +1,6 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace SUPPLY_API
 {
-    public class OrderUserAuthorizationDb : DbContext
+    public class OrderUserAuthorizationDb
     {
         public int Id { get; set; }
 

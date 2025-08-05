@@ -21,7 +21,8 @@ namespace SUPPLY_API
         public DbSet<PurchaseAuthorizationDb> PurchaseAuthorization { get; set; } = null!;
         public DbSet<PriceDb> PriceComponent { get; set; } = null!;
         public DbSet<CollaboratorSystemDb> CollaboratorSystem { get; set; } = null!;
-        public DbSet<SupplyOrderDb> SupplyOrderUser { get; set; } = null!;
+        public DbSet<SupplyOrderUserDb> SupplyOrderUser { get; set; } = null!;
+        public DbSet<SupplyOrderUserComponentDb> SupplyOrderUserComponent { get; set; } = null!;
 
         public DbSet<OrderUserAuthorizationDb> OrderUserAuthorization { get; set; } = null!;
 
@@ -81,10 +82,16 @@ namespace SUPPLY_API
                 pc.ToTable("CollaboratorSystem");
             });
 
-            modelBuilder.Entity<SupplyOrderDb>(pc =>
+            modelBuilder.Entity<SupplyOrderUserDb>(pc =>
             {
                 pc.HasKey(u => u.Id);
                 pc.ToTable("SupplyOrderUser");
+            });
+
+            modelBuilder.Entity<SupplyOrderUserComponentDb>(pc =>
+            {
+                pc.HasKey(u => u.Id);
+                pc.ToTable("SupplyOrderUserComponent");
             });
 
             modelBuilder.Entity<OrderUserAuthorizationDb>(pc =>
@@ -92,7 +99,6 @@ namespace SUPPLY_API
                 pc.HasKey(u => u.Id);
                 pc.ToTable("OrderUserAuthorization");
             });
-
 
         }
         internal object Find(string email)

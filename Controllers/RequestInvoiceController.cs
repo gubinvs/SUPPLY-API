@@ -50,14 +50,31 @@ namespace SUPPLY_API
                 return BadRequest(new { message = "Длины списков не совпадают" });
             }
 
-            var createdOrders = new SupplyOrderDb();
+            var createdOrders = new SupplyOrderUserComponentDb();
             string newGuidIdSupplyOrder = Guid.NewGuid().ToString();
 
             try
             {
+                // Название заказа на основании закупки (спецификации)
+                var newPurchase = new SupplyOrderUserDb
+                {
+                    GuidIdSupplyOrder = newGuidIdSupplyOrder,
+                    GuidIdPurchase = model.guidIdPurchase,
+                    PurchaseId = model.purchaseId,
+                    PurchaseName = model.purchaseName,
+                    PurchasePrice = model.purchasePrice,
+                    PurchaseCostomer = model.purchaseCostomer,
+                    
+                };
+
+                await _db.SupplyOrderUser.AddAsync(newPurchase);
+                await _db.SaveChangesAsync();
+
+
+
                 for (int i = 0; i < itemCount; i++)
                 {
-                    var newOrder = new SupplyOrderDb
+                    var newOrder = new SupplyOrderUserComponentDb
                     {
                         GuidIdSupplyOrder = newGuidIdSupplyOrder,
                         VendorCodeComponent = model.vendorCodeComponent[i],
@@ -68,7 +85,7 @@ namespace SUPPLY_API
                     };
 
                     createdOrders.Add(newOrder);
-                    await _db.SupplyOrderUser.AddAsync(newOrder);
+                    await _db.SupplyOrderUserComponent.AddAsync(newOrder);
                     await _db.SaveChangesAsync();
                 }
 

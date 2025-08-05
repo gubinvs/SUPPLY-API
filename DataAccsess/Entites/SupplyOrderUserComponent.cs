@@ -1,8 +1,9 @@
+
 using Microsoft.EntityFrameworkCore;
 
 namespace SUPPLY_API
 {
-    public class SupplyOrderDb : DbContext
+    public class SupplyOrderUserComponentDb : DbContext
     {
         public int Id { get; set; }
 
@@ -20,6 +21,6 @@ namespace SUPPLY_API
 
         public DateTime DeliveryTimeComponent { get; set; }
 
-        public SupplyOrderDb() { }
+        public SupplyOrderUserComponentDb() { }
     }
 }

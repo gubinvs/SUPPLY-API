@@ -38,8 +38,6 @@ namespace SUPPLY_API
             var user = await _db.CollaboratorSystem
                 .FirstOrDefaultAsync(u => u.GuidIdCollaborator == model.guidIdCollaborator);
 
-            
-
             if (user == null)
                 return NotFound(new { message = "Пользователь не найден" });
 
@@ -51,7 +49,7 @@ namespace SUPPLY_API
                 NameComponent = model.nameComponent,
                 QuantityComponent = model.quantityComponent,
                 PriceComponent = model.priceComponent,
-                DeliveryTimeComponent = DateTime.UtcNow.AddDays(5)
+                DeliveryTimeComponent = DateTime.UtcNow.AddDays(5) // Плюс пять дней к текущей дате
             };
 
             try
@@ -67,7 +65,8 @@ namespace SUPPLY_API
                 string body = "Тело письма";
 
 
-                // Добавить зависимости OrderUserAuthorization для того, кто отправил запрос и для того кто его получет
+                // Добавить зависимости OrderUserAuthorization (отображение в личном кабинете) 
+                // для того, кто отправил запрос и для того кто его получет
 
                 // Отправляем новый пароль на почту тому пользователю, которому отправили запрос счета
                 _emailSender.SendEmail(EmailAdmin, "Запрос счета, создание нового заказа", body);

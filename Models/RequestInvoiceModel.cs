@@ -13,10 +13,6 @@ namespace SUPPLY_API
         string purchaseName,
         int    purchasePrice,
         string purchaseCostomer,
-        List<string> vendorCodeComponent,
-        List<string> nameComponent,
-        List<int> quantityComponent,
-        List<int> priceComponent,
-        List<string> deliveryTimeComponent
+        List<PurchaseComponentDb> purchaseItem
     );
 };

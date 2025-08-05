@@ -41,17 +41,10 @@ namespace SUPPLY_API
             if (user == null)
                 return NotFound(new { message = "Пользователь не найден" });
 
-            // Проверка на совпадение размеров списков
-            int itemCount = model.vendorCodeComponent.Count;
-            if (model.nameComponent.Count != itemCount || 
-                model.quantityComponent.Count != itemCount || 
-                model.priceComponent.Count != itemCount)
-            {
-                return BadRequest(new { message = "Длины списков не совпадают" });
-            }
-
             var createdOrders = new SupplyOrderUserComponentDb();
             string newGuidIdSupplyOrder = Guid.NewGuid().ToString();
+            double profitability = 1.1; // Рентабельность по которой работает серви, также устанавливается и на frontende
+
 
             try
             {
@@ -64,7 +57,7 @@ namespace SUPPLY_API
                     PurchaseName = model.purchaseName,
                     PurchasePrice = model.purchasePrice,
                     PurchaseCostomer = model.purchaseCostomer,
-                    
+
                 };
 
                 await _db.SupplyOrderUser.AddAsync(newPurchase);
@@ -72,22 +65,23 @@ namespace SUPPLY_API
 
 
 
-                for (int i = 0; i < itemCount; i++)
+                foreach (var e in model.purchaseItem)
                 {
                     var newOrder = new SupplyOrderUserComponentDb
                     {
                         GuidIdSupplyOrder = newGuidIdSupplyOrder,
-                        VendorCodeComponent = model.vendorCodeComponent[i],
-                        NameComponent = model.nameComponent[i],
-                        QuantityComponent = model.quantityComponent[i],
-                        PriceComponent = model.priceComponent[i],
+                        VendorCodeComponent = e.VendorCodeComponent,
+                        NameComponent = e.NameComponent,
+                        QuantityComponent = e.RequiredQuantityItem,
+                        PriceComponent = Convert.ToInt32(e.PurchaseItemPrice * profitability), // Рентабельность по которой работает сервис
                         DeliveryTimeComponent = DateTime.UtcNow.AddDays(5) // временно статично
                     };
 
-                    createdOrders.Add(newOrder);
                     await _db.SupplyOrderUserComponent.AddAsync(newOrder);
                     await _db.SaveChangesAsync();
                 }
+
+
 
                 // Пропишем зависимости для доступа к заказам для пользователя заказчика
                 var userAccess = new OrderUserAuthorizationDb

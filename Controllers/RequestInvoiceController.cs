@@ -83,7 +83,7 @@ namespace SUPPLY_API
                         NameComponent = e.nameComponent,
                         QuantityComponent = e.requiredQuantityItem,
                         PriceComponent = (int)Math.Round(e.purchaseItemPrice * profitability), // Рентабельность по которой работает сервис
-                        DeliveryTimeComponent = DateTime.UtcNow.AddDays(5) // временно статично
+                        DeliveryTimeComponent = DateTime.UtcNow.AddDays(dayDelivery)
                     };
 
                     await _db.SupplyOrderUserComponent.AddAsync(newOrder);

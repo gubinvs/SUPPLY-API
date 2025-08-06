@@ -7,9 +7,7 @@ namespace SUPPLY_API
     {
         public int Id { get; set; }
 
-        public string? GuidIdSupplyOrder { get; set; }
-
-        public string? GuidIdCollaborator { get; set; }
+        public string? GuidIdSupplyOrderUser { get; set; }
 
         public string? VendorCodeComponent { get; set; }
 

@@ -18,6 +18,8 @@ namespace SUPPLY_API
 
         public string? PurchaseCostomer { get; set; }
 
+        public string? SupplyOrderUserStatus { get; set; }
+
 
         public SupplyOrderUserDb() { }
     }

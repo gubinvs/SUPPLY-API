@@ -23,9 +23,11 @@ namespace SUPPLY_API
         string guidIdComponent,
         string vendorCodeComponent,
         string nameComponent,
-        List<OtherOffers> otherOffers,
         int requiredQuantityItem,
-        int purchaseItemPrice
+        int purchaseItemPrice,
+        string bestComponentProvider,
+        string deliveryTimeComponent,
+        List<OtherOffers> otherOffers
     );
     
     

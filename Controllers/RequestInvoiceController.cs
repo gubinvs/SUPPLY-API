@@ -41,9 +41,11 @@ namespace SUPPLY_API
             if (user == null)
                 return NotFound(new { message = "Пользователь не найден" });
 
-            var createdOrders = new SupplyOrderUserComponentDb();
+        
+            // Рентабельность по которой работает серви, также устанавливается и на frontende
+            double profitability = 1.1;
+            // Генерируем новый идентификатор заказа
             string newGuidIdSupplyOrder = Guid.NewGuid().ToString();
-            double profitability = 1.1; // Рентабельность по которой работает серви, также устанавливается и на frontende
 
             try
             {
@@ -56,18 +58,27 @@ namespace SUPPLY_API
                     PurchaseName = model.purchaseName,
                     PurchasePrice = model.purchasePrice,
                     PurchaseCostomer = model.purchaseCostomer,
-
+                    SupplyOrderUserStatus = "новый"
                 };
 
                 await _db.SupplyOrderUser.AddAsync(newPurchase);
                 await _db.SaveChangesAsync();
 
-
+                // Сколько прибавить дней доставки
+                int dayDelivery = 0;
                 foreach (var e in model.purchaseItem)
                 {
+                    if (e.deliveryTimeComponent == "В наличии") {dayDelivery = 7;}
+                    else if (e.deliveryTimeComponent == "от 1 до 4 нед") {dayDelivery = 28;}
+                    else if (e.deliveryTimeComponent == "от 4 до 8 нед") {dayDelivery = 56;}
+                    else if (e.deliveryTimeComponent == "от 8 до 12 нед") {dayDelivery = 84;}
+                    else if (e.deliveryTimeComponent == "от 12 до 16 нед") {dayDelivery = 112;}
+                    else if (e.deliveryTimeComponent == "от 16 до 20 нед") {dayDelivery = 140;}
+                    else if (e.deliveryTimeComponent == "от 20 до 24 нед") {dayDelivery = 168;}
+                    
                     var newOrder = new SupplyOrderUserComponentDb
                     {
-                        GuidIdSupplyOrder = newGuidIdSupplyOrder,
+                        GuidIdSupplyOrderUser = newGuidIdSupplyOrder,
                         VendorCodeComponent = e.vendorCodeComponent,
                         NameComponent = e.nameComponent,
                         QuantityComponent = e.requiredQuantityItem,

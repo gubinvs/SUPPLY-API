@@ -49,7 +49,6 @@ var port = Environment.GetEnvironmentVariable("HTTP_PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 
-
 // --- Сервисы ---
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

@@ -61,7 +61,7 @@ namespace SUPPLY_API
                 PurchaseCustomer = order.PurchaseCostomer ?? string.Empty,
                 SupplyOrderUserStatus = order.SupplyOrderUserStatus ?? string.Empty,
                 OrderComponent = components
-                    .Where(c => c.Id == order.Id)
+                    .Where(c => c.GuidIdSupplyOrderUser == order.GuidIdSupplyOrder)
                     .Select(c => new OrderComponentDto
                     {
                         VendorCodeComponent = c.VendorCodeComponent ?? string.Empty,

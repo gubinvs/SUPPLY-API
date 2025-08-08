@@ -73,6 +73,7 @@ namespace SUPPLY_API
                 purchaseName = p.PurchaseName,
                 purchasePrice = p.PurchasePrice,
                 purchaseCostomer = p.PurchaseCostomer,
+                supplyPurchaseStatus = p.SupplyPurchaseStatus,
                 purchaseItem = components
                     .Where(c => c.GuidIdPurchase == p.GuidIdPurchase)
                     .Select(c =>

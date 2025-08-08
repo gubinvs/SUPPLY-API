@@ -16,6 +16,7 @@ namespace SUPPLY_API
         public int PurchasePrice { get; set; }
         // Заказчик закупки, если токое необходимо. например для кого формируется закупка
         public string? PurchaseCostomer { get; set; }
+        public string? SupplyPurchaseStatus { get; set; }
 
         public SupplyPurchaseDb() { }
 

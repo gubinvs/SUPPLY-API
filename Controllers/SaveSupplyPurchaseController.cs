@@ -46,7 +46,8 @@ namespace SUPPLY_API
                         PurchaseId = model.purchaseId,
                         PurchaseName = model.purchaseName,
                         PurchasePrice = model.purchasePrice,
-                        PurchaseCostomer = model.purchaseCostomer
+                        PurchaseCostomer = model.purchaseCostomer,
+                        SupplyPurchaseStatus = "В работе"
                     };
 
                     _db.SupplyPurchase.Add(existingPurchase);

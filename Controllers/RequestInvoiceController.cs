@@ -42,7 +42,7 @@ namespace SUPPLY_API
                 return NotFound(new { message = "Пользователь не найден" });
 
         
-            // Рентабельность по которой работает серви, также устанавливается и на frontende
+            // Рентабельность по которой работает сервис, также устанавливается и на frontende
             double profitability = 1.1;
             // Генерируем новый идентификатор заказа
             string newGuidIdSupplyOrder = Guid.NewGuid().ToString();

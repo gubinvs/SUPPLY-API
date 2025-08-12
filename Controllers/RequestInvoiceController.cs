@@ -58,7 +58,7 @@ namespace SUPPLY_API
                     PurchaseName = model.purchaseName,
                     PurchasePrice = model.purchasePrice,
                     PurchaseCostomer = model.purchaseCostomer,
-                    SupplyOrderUserStatus = "новый"
+                    SupplyOrderUserStatus = "Новый"
                 };
 
                 await _db.SupplyOrderUser.AddAsync(newPurchase);

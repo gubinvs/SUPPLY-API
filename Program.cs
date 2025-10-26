@@ -72,6 +72,7 @@ builder.Services.AddHostedService<DataCopyService>();
 // --- Проверка строк подключения ---
 var defaultConn = builder.Configuration.GetConnectionString("AppDatabase");
 var handyConn = builder.Configuration.GetConnectionString("HandyDatabase");
+var shopConntext = builder.Configuration.GetConnectionString("ShopDatabase");
 
 // --- DbContexts ---
 builder.Services.AddDbContext<UnitMeasurementComponentContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
@@ -87,6 +88,7 @@ builder.Services.AddDbContext<DeliveryAddressContext>(opt => opt.UseMySql(defaul
 builder.Services.AddDbContext<ManufacturerComponentContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
 builder.Services.AddDbContext<HandyDbContext>(opt => opt.UseMySql(handyConn, ServerVersion.AutoDetect(handyConn)));
 builder.Services.AddDbContext<SupplyContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
+builder.Services.AddDbContext<ShopContext>(opt => opt.UseMySql(shopConntext, ServerVersion.AutoDetect(shopConntext)));
 
 
 

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
+
 namespace SUPPLY_API
 {
 
@@ -7,12 +8,13 @@ namespace SUPPLY_API
     {
         public ShopContext(DbContextOptions<HandyDbContext> options) : base(options) { }
 
-        public DbSet<ProviderDb> SupplyProvider { get; set; } = null!;
-  
+        public DbSet<GoodsTableDb> GoodsTable { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<GoodsTableDb>((pc =>
+             // Здесь добавляем DbSet для таблицы товаров
+    
+        modelBuilder.Entity<GoodsTableDb>((pc =>
             {
                 pc.HasKey(u => u.Id);
                 pc.ToTable("goods_table");

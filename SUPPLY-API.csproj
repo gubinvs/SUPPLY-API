@@ -20,6 +20,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="IdentityModel" Version="7.0.0" />
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="9.0.10" />
     <PackageReference Include="Xceed.Words.NET" Version="4.0.25103.5784" />
     <PackageReference Include="EPPlus" Version="6.0.3" />
   </ItemGroup>

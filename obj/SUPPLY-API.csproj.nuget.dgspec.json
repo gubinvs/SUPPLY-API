@@ -88,6 +88,10 @@
               "target": "Package",
               "version": "[6.4.0, )"
             },
+            "System.Threading.Tasks.Dataflow": {
+              "target": "Package",
+              "version": "[9.0.10, )"
+            },
             "Xceed.Words.NET": {
               "target": "Package",
               "version": "[4.0.25103.5784, )"

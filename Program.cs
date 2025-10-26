@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.DataProtection;
 using SUPPLY_API;
+using SUPPLY_API.Services; // <--- обязательно
+
 using SUPPLY_API.Models;
 using Pomelo.EntityFrameworkCore.MySql;
 
@@ -66,7 +68,8 @@ builder.Services.AddScoped<EmailSender>();
 builder.Services.AddHostedService<EmailCleanupHostedService>();
 builder.Services.AddHostedService<DuplicateCleanupComponentService>(); // удаление дублей номенклатуры
 builder.Services.AddHostedService<RemoveDuplicatesManufacturer>(); // удаление дублей производителей
-builder.Services.AddHostedService<DataCopyService>();
+builder.Services.AddHostedService<DataCopyService>(); 
+builder.Services.AddHostedService<ShopDataSyncService>(); // копирование номенклатуры из магазина
 
 
 // --- Проверка строк подключения ---

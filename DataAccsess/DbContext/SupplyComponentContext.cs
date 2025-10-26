@@ -10,12 +10,11 @@ namespace SUPPLY_API
         /// <summary>
         /// Таблица с данными о пользователях системы
         /// </summary>
-        public DbSet<ComponentDb> SupplyComponent { get; set; } = null!;
-
         public SupplyComponentContext(DbContextOptions<SupplyComponentContext> options)
-            : base(options)
-        {
-        }
+          : base(options) { }
+
+        public DbSet<ComponentDb> SupplyComponent { get; set; }
+        public DbSet<DiscountDb> DiscountTable { get; set; }  // <-- типизировано
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

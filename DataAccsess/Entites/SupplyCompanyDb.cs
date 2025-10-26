@@ -2,6 +2,7 @@ namespace SUPPLY_API
 {
     public class SupplyCompanyDb
     {
+        
         public int Id { get; set; }
 
         public string? GuidIdCompany { get; set; }

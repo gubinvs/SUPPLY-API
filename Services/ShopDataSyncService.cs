@@ -56,7 +56,8 @@ namespace SUPPLY_API.Services
                 var loggerPrice = scope.ServiceProvider.GetRequiredService<ILogger<ChangePriceController>>();
 
                 // Берём только первую запись для отладки, потом убрать Take(1)
-                var goods = await shopDb.GoodsTable.Take(1).ToListAsync();
+                // var goods = await shopDb.GoodsTable.Take(1).ToListAsync();
+                var goods = await shopDb.GoodsTable.ToListAsync();
 
                 // Получаем скидку KEAZ из базы магазина
                 var keazDiscount = shopDb.DiscountTable

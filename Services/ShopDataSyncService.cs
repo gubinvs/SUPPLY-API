@@ -56,16 +56,16 @@ namespace SUPPLY_API.Services
                 var loggerPrice = scope.ServiceProvider.GetRequiredService<ILogger<ChangePriceController>>();
 
                 // Берём только первую запись для отладки, потом убрать Take(1)
-                // var goods = await shopDb.GoodsTable.Take(1).ToListAsync();
-                var goods = await shopDb.GoodsTable.ToListAsync();
+                var goods = await shopDb.GoodsTable.Take(40).ToListAsync();
+                // var goods = await shopDb.GoodsTable.ToListAsync();
 
                 // Получаем скидку KEAZ из базы магазина
-                var keazDiscount = shopDb.DiscountTable
-                    .Where(d => d.Manufacturer == "KEAZ")
-                    .Select(d => d.Discount ?? 1m)
-                    .AsEnumerable()
-                    .DefaultIfEmpty(1m)
-                    .First();
+                // var keazDiscount = shopDb.DiscountTable
+                //     .Where(d => d.Manufacturer == "KEAZ")
+                //     .Select(d => d.Discount ?? 1m)
+                //     .AsEnumerable()
+                //     .DefaultIfEmpty(1m)
+                //     .First();
 
                 var block = new ActionBlock<GoodsTableDb>(async item =>
                 {
@@ -91,7 +91,8 @@ namespace SUPPLY_API.Services
                         string deliveryTime = item.Quantity > 0 ? "в наличии" : "от 1 до 4 нед";
 
                         // Применяем скидку KEAZ
-                        int finalPrice = (int)Math.Round((item.Price ?? 0) * keazDiscount);
+                        // int finalPrice = (int)Math.Round((item.Price ?? 0) * keazDiscount);
+                        int finalPrice = (int)(item.Price ?? 0);
 
                         // Контроллер ChangePrice
                         var changeController = new ChangePriceController(

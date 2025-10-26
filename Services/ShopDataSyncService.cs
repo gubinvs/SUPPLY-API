@@ -28,7 +28,7 @@ namespace SUPPLY_API.Services
             _logger.LogInformation("Сервис синхронизации данных запущен.");
 
             var now = DateTime.Now;
-            var firstRun = new DateTime(now.Year, now.Month, now.Day, 21, 07, 0);
+            var firstRun = new DateTime(now.Year, now.Month, now.Day, 8, 0, 0);
             if (now > firstRun) firstRun = firstRun.AddDays(1);
 
             var initialDelay = firstRun - now;

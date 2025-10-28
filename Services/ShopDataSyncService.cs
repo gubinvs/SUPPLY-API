@@ -8,6 +8,9 @@ using System.Linq;
 using System.Threading;
 using SUPPLY_API.Controllers;
 
+/// Сервис для копирования номенклатуры из базы данных магазина в сервис SUPPLY
+/// 
+
 namespace SUPPLY_API.Services
 {
     public class ShopDataSyncService : IHostedService, IDisposable
@@ -28,7 +31,7 @@ namespace SUPPLY_API.Services
             _logger.LogInformation("Сервис синхронизации данных запущен.");
 
             var now = DateTime.Now;
-            var firstRun = new DateTime(now.Year, now.Month, now.Day, 8, 0, 0);
+            var firstRun = new DateTime(now.Year, now.Month, now.Day, 10, 41, 0);
             if (now > firstRun) firstRun = firstRun.AddDays(1);
 
             var initialDelay = firstRun - now;

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "qrGAnLdqgcQ=",
+  "dgSpecHash": "fLivJGCBi7k=",
   "success": true,
   "projectFilePath": "/home/gubinvs/SUPPLY-API/SUPPLY-API.csproj",
   "expectedPackageFiles": [
@@ -152,6 +152,7 @@
     "/home/gubinvs/.nuget/packages/system.text.regularexpressions/4.3.1/system.text.regularexpressions.4.3.1.nupkg.sha512",
     "/home/gubinvs/.nuget/packages/system.threading/4.3.0/system.threading.4.3.0.nupkg.sha512",
     "/home/gubinvs/.nuget/packages/system.threading.tasks/4.3.0/system.threading.tasks.4.3.0.nupkg.sha512",
+    "/home/gubinvs/.nuget/packages/system.threading.tasks.dataflow/9.0.10/system.threading.tasks.dataflow.9.0.10.nupkg.sha512",
     "/home/gubinvs/.nuget/packages/system.threading.tasks.extensions/4.5.4/system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "/home/gubinvs/.nuget/packages/system.threading.timer/4.3.0/system.threading.timer.4.3.0.nupkg.sha512",
     "/home/gubinvs/.nuget/packages/system.windows.extensions/6.0.0/system.windows.extensions.6.0.0.nupkg.sha512",

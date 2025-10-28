@@ -6,6 +6,7 @@ using System.Threading.Tasks.Dataflow;
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using SUPPLY_API.Controllers;
 
 namespace SUPPLY_API.Services
@@ -28,7 +29,7 @@ namespace SUPPLY_API.Services
             _logger.LogInformation("Сервис синхронизации данных запущен.");
 
             var now = DateTime.Now;
-            var firstRun = new DateTime(now.Year, now.Month, now.Day, 8, 0, 0);
+            var firstRun = new DateTime(now.Year, now.Month, now.Day, 19, 26, 0);
             if (now > firstRun) firstRun = firstRun.AddDays(1);
 
             var initialDelay = firstRun - now;
@@ -44,36 +45,30 @@ namespace SUPPLY_API.Services
             try
             {
                 using var scope = _services.CreateScope();
-
                 var shopDb = scope.ServiceProvider.GetRequiredService<ShopContext>();
-                var componentDb = scope.ServiceProvider.GetRequiredService<SupplyComponentContext>();
-                var priceDb = scope.ServiceProvider.GetRequiredService<SupplyPriceComponentContext>();
-                var manufactDb = scope.ServiceProvider.GetRequiredService<ManufacturerComponentContext>();
-                var unitDb = scope.ServiceProvider.GetRequiredService<UnitMeasurementComponentContext>();
-                var providerDb = scope.ServiceProvider.GetRequiredService<SupplyProviderContext>();
 
-                var loggerAdd = scope.ServiceProvider.GetRequiredService<ILogger<AddComponentController>>();
-                var loggerPrice = scope.ServiceProvider.GetRequiredService<ILogger<ChangePriceController>>();
-
-                // Берём только первую запись для отладки, потом убрать Take(1)
-                var goods = await shopDb.GoodsTable.Take(40).ToListAsync();
-                // var goods = await shopDb.GoodsTable.ToListAsync();
-
-                // Получаем скидку KEAZ из базы магазина
-                // var keazDiscount = shopDb.DiscountTable
-                //     .Where(d => d.Manufacturer == "KEAZ")
-                //     .Select(d => d.Discount ?? 1m)
-                //     .AsEnumerable()
-                //     .DefaultIfEmpty(1m)
-                //     .First();
+                // Берём товары для синхронизации
+                var goods = await shopDb.GoodsTable.Take(3).ToListAsync(); // Только три строчки
 
                 var block = new ActionBlock<GoodsTableDb>(async item =>
                 {
+                    if (string.IsNullOrWhiteSpace(item.VendorCode))
+                        return;
+
+                    // 🟢 создаём новый scope для каждой операции
+                    using var innerScope = _services.CreateScope();
+
+                    var componentDb = innerScope.ServiceProvider.GetRequiredService<SupplyComponentContext>();
+                    var priceDb = innerScope.ServiceProvider.GetRequiredService<SupplyPriceComponentContext>();
+                    var manufactDb = innerScope.ServiceProvider.GetRequiredService<ManufacturerComponentContext>();
+                    var unitDb = innerScope.ServiceProvider.GetRequiredService<UnitMeasurementComponentContext>();
+                    var providerDb = innerScope.ServiceProvider.GetRequiredService<SupplyProviderContext>();
+                    var loggerAdd = innerScope.ServiceProvider.GetRequiredService<ILogger<AddComponentController>>();
+                    var loggerPrice = innerScope.ServiceProvider.GetRequiredService<ILogger<ChangePriceController>>();
+
                     try
                     {
-                        if (string.IsNullOrWhiteSpace(item.VendorCode)) return;
-
-                        // Контроллер AddComponent
+                        // Добавляем или обновляем компонент
                         var addController = new AddComponentController(
                             loggerAdd, componentDb, priceDb, manufactDb, unitDb
                         );
@@ -82,19 +77,18 @@ namespace SUPPLY_API.Services
                             VendorCodeComponent: item.VendorCode,
                             NameComponent: item.NameComponent ?? "Без названия",
                             guidIdManufacturer: item.Manufacturer ?? "",
-                            guidIdUnitMeasurement: "шт"
+                            guidIdUnitMeasurement: "f1f3d9f5-1085-40fe-82ec-c693ac60664b"
                         );
 
                         await addController.AddComponent(addModel);
 
-                        // Рассчитываем срок поставки
+                        // Срок поставки
                         string deliveryTime = item.Quantity > 0 ? "в наличии" : "от 1 до 4 нед";
 
-                        // Применяем скидку KEAZ
-                        // int finalPrice = (int)Math.Round((item.Price ?? 0) * keazDiscount);
+                        // Цена
                         int finalPrice = (int)(item.Price ?? 0);
 
-                        // Контроллер ChangePrice
+                        // Обновляем цену
                         var changeController = new ChangePriceController(
                             loggerPrice, componentDb, priceDb, providerDb
                         );
@@ -114,6 +108,7 @@ namespace SUPPLY_API.Services
                     {
                         _logger.LogError(ex, "Ошибка при обработке артикула {vendor}", item.VendorCode);
                     }
+
                 }, new ExecutionDataflowBlockOptions
                 {
                     MaxDegreeOfParallelism = MaxDegreeOfParallelism
@@ -125,7 +120,7 @@ namespace SUPPLY_API.Services
                 block.Complete();
                 await block.Completion;
 
-                _logger.LogInformation("Синхронизация завершена.");
+                _logger.LogInformation("Синхронизация завершена ({count} товаров).", goods.Count);
             }
             catch (Exception ex)
             {

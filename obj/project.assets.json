@@ -2561,22 +2561,6 @@
           }
         }
       },
-      "System.Threading.Tasks.Dataflow/9.0.10": {
-        "type": "package",
-        "compile": {
-          "lib/net9.0/System.Threading.Tasks.Dataflow.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/System.Threading.Tasks.Dataflow.dll": {
-            "related": ".xml"
-          }
-        },
-        "build": {
-          "buildTransitive/net8.0/_._": {}
-        }
-      },
       "System.Threading.Tasks.Extensions/4.5.4": {
         "type": "package",
         "compile": {
@@ -8188,36 +8172,6 @@
         "system.threading.tasks.nuspec"
       ]
     },
-    "System.Threading.Tasks.Dataflow/9.0.10": {
-      "sha512": "k1o6v6V3+4mznSnPnO0FBaRjiAPL1ouKPfPQH7hO9Z2SwJHt8E45F4wX5yQh1aeja1JHPYEungQedXibng654Q==",
-      "type": "package",
-      "path": "system.threading.tasks.dataflow/9.0.10",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Icon.png",
-        "LICENSE.TXT",
-        "PACKAGE.md",
-        "THIRD-PARTY-NOTICES.TXT",
-        "buildTransitive/net461/System.Threading.Tasks.Dataflow.targets",
-        "buildTransitive/net462/_._",
-        "buildTransitive/net8.0/_._",
-        "buildTransitive/netcoreapp2.0/System.Threading.Tasks.Dataflow.targets",
-        "lib/net462/System.Threading.Tasks.Dataflow.dll",
-        "lib/net462/System.Threading.Tasks.Dataflow.xml",
-        "lib/net8.0/System.Threading.Tasks.Dataflow.dll",
-        "lib/net8.0/System.Threading.Tasks.Dataflow.xml",
-        "lib/net9.0/System.Threading.Tasks.Dataflow.dll",
-        "lib/net9.0/System.Threading.Tasks.Dataflow.xml",
-        "lib/netstandard2.0/System.Threading.Tasks.Dataflow.dll",
-        "lib/netstandard2.0/System.Threading.Tasks.Dataflow.xml",
-        "lib/netstandard2.1/System.Threading.Tasks.Dataflow.dll",
-        "lib/netstandard2.1/System.Threading.Tasks.Dataflow.xml",
-        "system.threading.tasks.dataflow.9.0.10.nupkg.sha512",
-        "system.threading.tasks.dataflow.nuspec",
-        "useSharedDesignerContext.txt"
-      ]
-    },
     "System.Threading.Tasks.Extensions/4.5.4": {
       "sha512": "zteT+G8xuGu6mS+mzDzYXbzS7rd3K6Fjb9RiZlYlJPam2/hU7JCBZBVEcywNuR+oZ1ncTvc/cq0faRr3P01OVg==",
       "type": "package",
@@ -8571,29 +8525,29 @@
       "Pomelo.EntityFrameworkCore.MySql >= 8.0.1",
       "QRCoder >= 1.6.0",
       "Swashbuckle.AspNetCore >= 6.4.0",
-      "System.Threading.Tasks.Dataflow >= 9.0.10",
       "Xceed.Words.NET >= 4.0.25103.5784"
     ]
   },
   "packageFolders": {
-    "/Users/vladimirgubin/.nuget/packages/": {}
+    "/home/gubinvs/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/vladimirgubin/SUPPLY-API/SUPPLY-API.csproj",
+      "projectUniqueName": "/home/gubinvs/SUPPLY-API/SUPPLY-API.csproj",
       "projectName": "SUPPLY-API",
-      "projectPath": "/Users/vladimirgubin/SUPPLY-API/SUPPLY-API.csproj",
-      "packagesPath": "/Users/vladimirgubin/.nuget/packages/",
-      "outputPath": "/Users/vladimirgubin/SUPPLY-API/obj/",
+      "projectPath": "/home/gubinvs/SUPPLY-API/SUPPLY-API.csproj",
+      "packagesPath": "/home/gubinvs/.nuget/packages/",
+      "outputPath": "/home/gubinvs/SUPPLY-API/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/vladimirgubin/.nuget/NuGet/NuGet.Config"
+        "/home/gubinvs/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
       ],
       "sources": {
+        "/usr/lib/dotnet/library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -8662,10 +8616,6 @@
             "target": "Package",
             "version": "[6.4.0, )"
           },
-          "System.Threading.Tasks.Dataflow": {
-            "target": "Package",
-            "version": "[9.0.10, )"
-          },
           "Xceed.Words.NET": {
             "target": "Package",
             "version": "[4.0.25103.5784, )"
@@ -8690,7 +8640,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.106/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

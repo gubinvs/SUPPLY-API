@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SUPPLY_API.Controllers;
+using Microsoft.EntityFrameworkCore;
 
 /// Сервис для копирования номенклатуры из базы данных магазина в сервис SUPPLY
 /// 
@@ -31,7 +32,7 @@ namespace SUPPLY_API.Services
             _logger.LogInformation("Сервис синхронизации данных запущен.");
 
             var now = DateTime.Now;
-            var firstRun = new DateTime(now.Year, now.Month, now.Day, 19, 26, 0);
+            var firstRun = new DateTime(now.Year, now.Month, now.Day, 23, 59, 0); // время запуска
             if (now > firstRun) firstRun = firstRun.AddDays(1);
 
             var initialDelay = firstRun - now;
@@ -50,7 +51,8 @@ namespace SUPPLY_API.Services
                 var shopDb = scope.ServiceProvider.GetRequiredService<ShopContext>();
 
                 // Берём товары для синхронизации
-                var goods = await shopDb.GoodsTable.Take(3).ToListAsync(); // Только три строчки
+                //var goods = await shopDb.GoodsTable.Take(20).ToListAsync(); // Только три строчки
+                var goods = await shopDb.GoodsTable.ToListAsync(); // Все данные
 
                 var block = new ActionBlock<GoodsTableDb>(async item =>
                 {
@@ -68,6 +70,8 @@ namespace SUPPLY_API.Services
                     var loggerAdd = innerScope.ServiceProvider.GetRequiredService<ILogger<AddComponentController>>();
                     var loggerPrice = innerScope.ServiceProvider.GetRequiredService<ILogger<ChangePriceController>>();
 
+                    string manufact = ""; /// guidIdManufacturer
+
                     try
                     {
                         // Добавляем или обновляем компонент
@@ -75,10 +79,24 @@ namespace SUPPLY_API.Services
                             loggerAdd, componentDb, priceDb, manufactDb, unitDb
                         );
 
+                        if (item.Manufacturer == "KEAZ")
+                        {
+                            manufact = "fcf9dfd2-f8f5-4cfd-945f-ffc8c3115f22";
+                        }
+                        else if (item.Manufacturer == "Schneider Electric")
+                        {
+                            manufact = "7122f3e2-a862-4599-a749-afaa9e413ec4";
+                        }
+                        else if (item.Manufacturer == "PHOENIX CONTACT")
+                        {
+                            manufact = "4bf68f98-24ad-4d63-bb75-f4af450d3e10";
+                        }
+
+
                         var addModel = new AddComponentModel(
                             VendorCodeComponent: item.VendorCode,
                             NameComponent: item.NameComponent ?? "Без названия",
-                            guidIdManufacturer: item.Manufacturer ?? "",
+                            guidIdManufacturer: manufact ?? "",
                             guidIdUnitMeasurement: "f1f3d9f5-1085-40fe-82ec-c693ac60664b"
                         );
 

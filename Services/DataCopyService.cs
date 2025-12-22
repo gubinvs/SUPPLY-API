@@ -61,7 +61,7 @@ using Microsoft.Extensions.Hosting;
             public Task StartAsync(CancellationToken cancellationToken)
             {
                 var now = DateTime.Now;
-                var nextRun = new DateTime(now.Year, now.Month, now.Day, 17, 07, 0); // каждый день в 7:00
+                var nextRun = new DateTime(now.Year, now.Month, now.Day, 10, 03, 0); // каждый день в 7:00
                 var delay = nextRun - now;
                 if (delay.TotalMilliseconds < 0)
                     delay = delay.Add(TimeSpan.FromDays(1));

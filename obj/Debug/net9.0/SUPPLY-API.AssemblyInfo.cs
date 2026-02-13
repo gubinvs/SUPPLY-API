@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SUPPLY-API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+18f9e3841ede7773c6d7629df69ad5dfa95ea02d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+abea46133ee9ecb989da76aefe53d4b6d545c6c7")]
 [assembly: System.Reflection.AssemblyProductAttribute("SUPPLY-API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SUPPLY-API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

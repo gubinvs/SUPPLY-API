@@ -32,7 +32,7 @@ namespace SUPPLY_API.Services
             _logger.LogInformation("Сервис синхронизации данных запущен.");
 
             var now = DateTime.Now;
-            var firstRun = new DateTime(now.Year, now.Month, now.Day, 23, 59, 0); // время запуска
+            var firstRun = new DateTime(now.Year, now.Month, now.Day, 14, 21, 0); // время запуска
             if (now > firstRun) firstRun = firstRun.AddDays(1);
 
             var initialDelay = firstRun - now;

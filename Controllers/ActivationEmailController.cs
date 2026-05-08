@@ -99,6 +99,5 @@ namespace SUPPLY_API
 
         }
     }
-
     public record ActivationEmailModel(string Email);
 }

@@ -82,20 +82,21 @@ namespace SUPPLY_API
 
                 // return Ok(new { message = "Email подтверждён успешно!" });
                 // Перенаправляем на страницу успеха
-                return Redirect($"{_serverAddresses.ServerAddressFrontend}");
+                //return Redirect($"{_serverAddresses.ServerAddressFrontend}");
+                return Redirect($"{Request.Scheme}://{Request.Host}:1040");
             
         }
 
         private void SendConfirmationEmail(string email, string guid)
         {
-            var confirmationLink = $"{_serverAddresses.ServerAddressApi}/api/activationemail/confirm/{guid}";
+            //var confirmationLink = $"{_serverAddresses.ServerAddressApi}/api/activationemail/confirm/{guid}";
             // Ссылка для локальной сети (Хэнди автомейшн)
-            var linkHandy = $"{_serverAddresses.ServerAddressApi}:1040/api/api/activationemail/confirm/{guid}";
+            var linkHandy = $"{Request.Scheme}://{Request.Host}:1040/api/api/activationemail/confirm/{guid}";
             var subject = "Подтверждение регистрации";
-            var body = $"Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке:\n\n{linkHandy}";
+            var bodyHandy = $"Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке:\n\n{linkHandy}";
             // var body = $"Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке:\n\n{confirmationLink}";
 
-            _emailSender.SendEmail(email, subject, body);
+            _emailSender.SendEmail(email, subject, bodyHandy);
 
         }
     }

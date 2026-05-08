@@ -88,9 +88,12 @@ namespace SUPPLY_API
 
         private void SendConfirmationEmail(string email, string guid)
         {
-            var confirmationLink = $"{_serverAddresses.ServerAddressApi}:1040/api/api/activationemail/confirm/{guid}";
+            var confirmationLink = $"{_serverAddresses.ServerAddressApi}/api/activationemail/confirm/{guid}";
+            // Ссылка для локальной сети (Хэнди автомейшн)
+            var linkHandy = $"{_serverAddresses.ServerAddressApi}:1040/api/api/activationemail/confirm/{guid}";
             var subject = "Подтверждение регистрации";
-            var body = $"Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке:\n\n{confirmationLink}";
+            var body = $"Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке:\n\n{linkHandy}";
+            // var body = $"Пожалуйста, подтвердите вашу регистрацию, перейдя по ссылке:\n\n{confirmationLink}";
 
             _emailSender.SendEmail(email, subject, body);
 

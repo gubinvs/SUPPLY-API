@@ -23,8 +23,8 @@ namespace SUPPLY_API
         public DbSet<CollaboratorSystemDb> CollaboratorSystem { get; set; } = null!;
         public DbSet<SupplyOrderUserDb> SupplyOrderUser { get; set; } = null!;
         public DbSet<SupplyOrderUserComponentDb> SupplyOrderUserComponent { get; set; } = null!;
-
         public DbSet<OrderUserAuthorizationDb> OrderUserAuthorization { get; set; } = null!;
+        public DbSet<OrderUserAuthorizationDb> PurchasePrice { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -99,6 +99,13 @@ namespace SUPPLY_API
                 pc.HasKey(u => u.Id);
                 pc.ToTable("OrderUserAuthorization");
             });
+
+            modelBuilder.Entity<PurchasePriceDb>(pc =>
+            {
+                pc.HasKey(u => u.Id);
+                pc.ToTable("PurchasePrice");
+            });
+
 
         }
         internal object Find(string email)

@@ -1,62 +1,58 @@
-// Модель данный о пользователях системы
-
-
 namespace SUPPLY_API
 {
-    public class PurchasePriceDb
+    public class CollaboratorSystemDb
     {
         public int Id { get; set; }
 
-        // Идентификатор номенклатуры
-        public string? GuidIdComponent { get; set; }
+        // Идентификатор пользователя 
+        public string? GuidIdCollaborator { get; set; }
 
-        // Артикул номенклатуры
-        public string? Article { get; set; }
+        // Идентификатор роли пользователя в системе (админ, поставшик, заказчик)
+        public string? GuidIdRoleSystem { get; set; }
 
-        // Наименование номенклатуры
-        public string? NameComponent { get; set; }
+        // Временный токер выдаваемый при авторизации пользователя
+        public string? TokenSystem { get; set; }
 
-        // Идентификатор поставщика
-        public string? GuidIdProvider { get; set; }
+        // ФИО пользователя
+        public string? NameCollaborator { get; set; }
 
-        // Наименование поставщика
-        public string? NameProvider { get; set; }
+        // E-mail пользователя
+        public string? EmailCollaborator { get; set; }
 
-        // Цена покупки
-        public int? PurchasePrice { get; set; }
+        // Пароль пользователя
+        public string? PasswordCollaborator { get; set; }
 
-        // Дата покупки
-        public DateTime SaveDataPrice { get; set; }
-
-        // Производитель
-        public string? Manufacturer { get; set; }
-
-        // Единица измерения
-        public string? UnitMeasurement { get; set; }
+        // Телефон пользователя
+        public string? PhoneCollaborator { get; set; }
 
 
-        public PurchasePriceDb() { }
-        public PurchasePriceDb(
-                    string guidIdComponent,
-                    string article,
-                    string nameComponent,
-                    string guidIdProvider,
-                    string nameProvider,
-                    int purchasePrice,
-                    DateTime saveDataPrice,
-                    string manufacturer,
-                    string unitMeasurement 
+        // Дата регистрации пользователя в системе
+        public DateTime DataRegistrationCollaborator { get; set; }
+
+        // Подтверждение e-mail пользователем
+        public bool ActivationEmailCollaborator { get; set; }
+
+
+        public CollaboratorSystemDb() { }
+        public CollaboratorSystemDb(
+                    string guidIdCollaborator,
+                    string guidIdRoleSystem,
+                    string tokenSystem,
+                    string nameCollaborator,
+                    string emailCollaborator,
+                    string phoneCollaborator,
+                    DateTime dataRegistrationCollaborator,
+                    bool activationEmailCollaborator
                 )
         {
-            GuidIdComponent = guidIdComponent;
-            Article = article;
-            NameComponent = nameComponent;
-            GuidIdProvider = guidIdProvider;
-            NameProvider = nameProvider;
-            PurchasePrice = purchasePrice;
-            SaveDataPrice = saveDataPrice;
-            Manufacturer = manufacturer;
-            UnitMeasurement = unitMeasurement;
+            GuidIdCollaborator = guidIdCollaborator;
+            GuidIdRoleSystem = guidIdRoleSystem;
+            TokenSystem = tokenSystem;
+            NameCollaborator = nameCollaborator;
+            EmailCollaborator = emailCollaborator;
+            PhoneCollaborator = phoneCollaborator;
+            DataRegistrationCollaborator = dataRegistrationCollaborator;
+            ActivationEmailCollaborator = activationEmailCollaborator;
         }
     }
 }

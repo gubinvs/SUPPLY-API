@@ -31,16 +31,16 @@ namespace SUPPLY_API
 
 
         [HttpPost]
-        public IActionResult AddRecordingPurchasePrice (IFormFile formFile)
+        public async IActionResult AddRecordingPurchasePrice (IFormFile formFile)
         {
 
             // Сохранение полученного файла на сервер получение пути к нему
             SavingFileFolder newFile = new SavingFileFolder();
-            string filePath = newFile.ReturnNameFile(formFile);
+            string filePath = await newFile.ReturnNameFile(formFile);
 
             // Получение данных из файла в виде строки json
             ParserExcelFile parser = new ParserExcelFile();
-            string json = parser.ParserPurchasePrice(filePath);
+            List<ParserPurchasePrice> listPurchasePrice = parser.ParserPurchasePrice(filePath);
 
             // Подчищаем за собой, удаляем отработанный файл
             newFile.DeletingFile(filePath);

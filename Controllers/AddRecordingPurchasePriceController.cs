@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SUPPLY_API.Services;
 
 namespace SUPPLY_API
 {
@@ -33,6 +34,16 @@ namespace SUPPLY_API
         public IActionResult AddRecordingPurchasePrice (IFormFile formFile)
         {
 
+            // Сохранение полученного файла на сервер получение пути к нему
+            SavingFileFolder newFile = new SavingFileFolder();
+            string filePath = newFile.ReturnNameFile(formFile);
+
+            // Получение данных из файла в виде строки json
+            ParserExcelFile parser = new ParserExcelFile();
+            string json = parser.ParserPurchasePrice(filePath);
+
+            // Подчищаем за собой, удаляем отработанный файл
+            newFile.DeletingFile(filePath);
 
             return Ok(new { message = "Данные о новых закупках внесены в базу данных" });
         }

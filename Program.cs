@@ -70,6 +70,8 @@ builder.Services.AddHostedService<DuplicateCleanupComponentService>(); // уда
 builder.Services.AddHostedService<RemoveDuplicatesManufacturer>(); // удаление дублей производителей
 builder.Services.AddHostedService<DataCopyService>(); 
 builder.Services.AddHostedService<ShopDataSyncService>(); // копирование номенклатуры из магазина
+builder.Services.AddScoped<ReturnMaxPriceProviderService>(); // Возвращает максимальное предложение по цене
+builder.Services.AddScoped<ReturnLastPurchasePriceService>(); // Возвращает свежую по дате цену покупки
 
 
 // --- Проверка строк подключения ---

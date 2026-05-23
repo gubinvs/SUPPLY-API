@@ -3,6 +3,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SUPPLY_API
 {
+
+    /// <summary>
+    /// Контроллер принимает артикул и достает из базы данных запись соответствующую артикулу
+    /// метод ReturnDataLastEntryPurchasePrice возвращает последнюю на основании даты записи, а метод
+    /// ReturnAllPurchasePrice возвращает все записи соответствующие артикулу
+    /// </summary>
     [Controller]
     [Route("api/[controller]")]
     public class ReturnLastEntryPurchasePriceController : ControllerBase
@@ -20,7 +26,8 @@ namespace SUPPLY_API
             _db = db;
         }
 
-        /// Получить последнюю запись по артикулу
+        /// Получить первую запись в отсортированном по убыванию списке на основании даты записи
+        /// тем самым возвращаем последнюю (свежую) на основании даты запись
         [HttpGet("last")]
         public async Task<IActionResult> ReturnDataLastEntryPurchasePrice(string vendorCode)
         {

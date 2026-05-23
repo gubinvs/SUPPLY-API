@@ -97,43 +97,60 @@ namespace SUPPLY_API {
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        public async Task<List<ParserPurchasePrice>> ParserPurchasePrice (string filePath)
+        public Task<List<ParserPurchasePrice>> ParserFilePurchasePrice (string filePath)
          {
-             // Открываем книгу Excel
-             var workbook = new XLWorkbook(filePath);
+            // Открываем книгу Excel
+            var workbook = new XLWorkbook(filePath);
 
-             // Выбрали Лист_1 книги Excel 
-             var worksheet = workbook.Worksheet(1);
+            // Выбрали Лист_1 книги Excel 
+            var worksheet = workbook.Worksheet(1);
 
-             // Получаем количество заполненных строк
-             var count = worksheet.RangeUsed().RowCount();
+            // Получаем количество заполненных строк
+            var count = worksheet.RangeUsed().RowCount();
 
              // Получаем диапазон строк от второй до последней заполненной
              // var rows = worksheet.RangeUsed().RowsUsed(); // Получаем все заполненные строки в файле
              // var row = worksheet.Row(13); // Получаем указанную строку
              // Получаем начиная с указанной строки до указанной или count - все строки var count = worksheet.RangeUsed().RowCount();
-             var range = worksheet.Rows(2, count);
+            var range = worksheet.Rows(2, count);
 
-             List<ParserPurchasePrice> priceList = new List<ParserPurchasePrice>();
+            List<ParserPurchasePrice> priceList = new();
 
-             foreach (var row in @range)
-             {
-                 if (row != null) {
-                    /// row.Cell(1) - значение в столбце № 11
-                    await Task.Run(() => priceList.Add(new ParserPurchasePrice(
-                        row.Cell(1).Value.ToString(), 
-                        row.Cell(2).Value.ToString(),
-                        row.Cell(3).Value.ToString(),
-                        row.Cell(4).Value.ToString(),
-                        row.Cell(5).Value.ToString()
-                    )));
-                 }
-             };
+            foreach (var row in range)
+            {
+                if (row == null)
+                    continue;
+
+                var vendorCode = row.Cell(1).GetValue<string>() ?? string.Empty;
+                var inn = row.Cell(3).GetValue<string>() ?? string.Empty;
+
+                var dateText = row.Cell(2).GetValue<string>();
+
+                DateTime saveDate;
+
+                if (!DateTime.TryParseExact(
+                        dateText,
+                        "dd.MM.yyyy",
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.None,
+                        out saveDate))
+                {
+                    saveDate = DateTime.MinValue; // или DateTime.Now если нужно
+                }
+
+                priceList.Add(new ParserPurchasePrice(
+                    vendorCode,
+                    saveDate,
+                    inn,
+                    row.Cell(4).GetValue<string>() ?? string.Empty
+                ));
+            }
+
+            return Task.FromResult(priceList);
  
             // Сериализуем в json формат
             // string json = JsonSerializer.Serialize(priceList);
 
-             return priceList;
         } 
     
     }; 

@@ -1,5 +1,5 @@
 
-
+using System.Globalization;
 using IdentityModel.Client;
 
 namespace SUPPLY_API {
@@ -11,37 +11,43 @@ namespace SUPPLY_API {
     public class ParserPurchasePrice
     {
         // Артикул номенклатуры
-        string? VendorCode {get; set;}
-
-        // Наименование номенклатуры
-        string? NameComponent {get; set;}
+        public string? VendorCode {get; set;}
 
         // Дата оприходования номенклатуры
-        DateTime SaveDataPrice {get; set;}
+        public DateTime SaveDataPrice {get; set;}
 
         // ИНН Поставщика
-        string? InnPurchase {get; set;}
+        public string? InnPurchase {get; set;}
 
         // Цена номенклатуры
-        int? PurchasePrice {get; set;}
+        public int? PurchasePrice {get; set;}
 
 
-        ParserPurchasePrice (
+        public ParserPurchasePrice (
             string vendorCode,
-            string  nameComponent,
-            string saveDataPrice,
+            DateTime saveDataPrice,
             string innPurchase,
             string purchasePrice
         )
         {
             VendorCode = vendorCode;
-            NameComponent = nameComponent;
-            DateTime.TryParse(saveDataPrice, out DateTime date);
-            SaveDataPrice = date;
+            SaveDataPrice = saveDataPrice;
             InnPurchase = innPurchase;
-            if (int.TryParse(purchasePrice, out int price))
+            purchasePrice = purchasePrice
+                .Replace(" ", "")
+                .Replace(",", ".");
+
+            if (decimal.TryParse(
+                purchasePrice,
+                NumberStyles.Any,
+                CultureInfo.InvariantCulture,
+                out decimal price))
             {
-                PurchasePrice = price;
+                PurchasePrice = (int)Math.Round(price);
+            }
+            else
+            {
+                PurchasePrice = 0;
             }
         }
     }

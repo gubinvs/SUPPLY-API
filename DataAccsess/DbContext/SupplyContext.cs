@@ -24,7 +24,7 @@ namespace SUPPLY_API
         public DbSet<SupplyOrderUserDb> SupplyOrderUser { get; set; } = null!;
         public DbSet<SupplyOrderUserComponentDb> SupplyOrderUserComponent { get; set; } = null!;
         public DbSet<OrderUserAuthorizationDb> OrderUserAuthorization { get; set; } = null!;
-        public DbSet<OrderUserAuthorizationDb> PurchasePrice { get; set; } = null!;
+        public DbSet<PurchasePriceDb> PurchasePrice { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

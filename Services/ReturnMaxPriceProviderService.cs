@@ -130,7 +130,8 @@ namespace SUPPLY_API
                     article,
                     component.NameComponent ?? "",
                     offerWithName.PriceComponent ?? 0,
-                    offerWithName.SaveDataPrice,
+                    offerWithName.DeliveryTimeComponent ?? "",
+                    offerWithName.SaveDataPrice.ToString("dd.MM.yyyy"),
                     manufacturerName ?? "",
                     unitName ?? "",
                     "Максимальная цена предложений"

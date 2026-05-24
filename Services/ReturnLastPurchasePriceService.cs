@@ -46,11 +46,11 @@ namespace SUPPLY_API
                 vendorCode,
                 data.NameComponent ?? "",
                 data.PurchasePrice ?? 0,
-                data.SaveDataPrice,
+                "Оприходовано",
+                data.SaveDataPrice.ToString("dd.MM.yyyy"),
                 data.Manufacturer ?? "",
                 data.UnitMeasurement ?? "",
                 "Последняя цена покупки"
-                
             );
 
             return (newOffer);

@@ -15,8 +15,12 @@ namespace SUPPLY_API
         // Цена покупки
         public int? Price { get; set; }
 
+        // Срок поставки
+        public string? DeliveryTimeComponent {get; set;}
+
+
         // Дата покупки
-        public DateTime SaveDataPrice { get; set; }
+        public string SaveDataPrice { get; set; }
 
         // Производитель
         public string? Manufacturer { get; set; }
@@ -33,7 +37,8 @@ namespace SUPPLY_API
             string article,
             string nameComponent,
             int price,
-            DateTime saveDataPrice,
+            string deliveryTimeComponent,
+            string saveDataPrice,
             string manufacturer,
             string unitMeasurement,
             string namePrice
@@ -43,6 +48,7 @@ namespace SUPPLY_API
             Article = article;
             NameComponent = nameComponent;
             Price = price;
+            DeliveryTimeComponent = deliveryTimeComponent;
             SaveDataPrice = saveDataPrice;
             Manufacturer = manufacturer;
             UnitMeasurement = unitMeasurement;

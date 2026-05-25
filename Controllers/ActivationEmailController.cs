@@ -76,8 +76,9 @@ namespace SUPPLY_API
                     return BadRequest(new { message = "Пользователь не найден." });
                 }
 
+                var newGuidId = Guid.NewGuid();
                 user.ActivationEmailCollaborator = true;
-                //user.GuidIdCollaborator = null; // обнуляем GUID после подтверждения
+                user.GuidIdCollaborator = newGuidId.ToString(); // обнуляем GUID после подтверждения
                 _db.SaveChanges();
 
                 // return Ok(new { message = "Email подтверждён успешно!" });

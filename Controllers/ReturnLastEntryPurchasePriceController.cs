@@ -6,7 +6,7 @@ namespace SUPPLY_API
 
     /// <summary>
     /// Контроллер принимает артикул и достает из базы данных запись соответствующую артикулу
-    /// метод ReturnDataLastEntryPurchasePrice возвращает последнюю на основании даты записи, а метод
+    /// метод ReturnDataLastEntryPurchasePrice возвращает последнюю на основании даты запись, а метод
     /// ReturnAllPurchasePrice возвращает все записи соответствующие артикулу
     /// </summary>
     [Controller]

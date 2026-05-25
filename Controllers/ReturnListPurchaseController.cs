@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace SUPPLY_API
 {
     /// <summary>
-    /// Контроллер возвращает на запрос данные о всех закупках, доступных данному пользователю
+    /// Контроллер возвращает данные о всех закупках, доступных данному пользователю
     /// </summary>
     [ApiController]
     [Route("api/[controller]/{guidIdCollaborator}")]

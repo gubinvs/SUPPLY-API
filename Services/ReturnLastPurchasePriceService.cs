@@ -17,12 +17,15 @@ namespace SUPPLY_API
     public class ReturnLastPurchasePriceService
     {
         private readonly SupplyContext _db;
+        private readonly ReturnMaxPriceProviderService _returnMaxOffer;
 
         public ReturnLastPurchasePriceService
         (
+            ReturnMaxPriceProviderService returnMaxOffer,
             SupplyContext db
         )
         {
+            _returnMaxOffer = returnMaxOffer;
             _db = db;
         }
 
@@ -40,13 +43,20 @@ namespace SUPPLY_API
                 return null;
             }
 
+            var maxOffer = await _returnMaxOffer.GetMaxPriceProvider(vendorCode);
+
+            if (maxOffer == null)
+            {
+                return null;
+            }
+
             
             ReturnOffer newOffer = new ReturnOffer
             (
                 vendorCode,
                 data.NameComponent ?? "",
                 data.PurchasePrice ?? 0,
-                "Оприходовано",
+                maxOffer.DeliveryTimeComponent ?? "Нет данных о сроках поставки",
                 data.SaveDataPrice.ToString("dd.MM.yyyy"),
                 data.Manufacturer ?? "",
                 data.UnitMeasurement ?? "",

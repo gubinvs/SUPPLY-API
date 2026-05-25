@@ -33,7 +33,7 @@ namespace SUPPLY_API
         [HttpGet]
          public async Task<IActionResult> CreateReport(string article)
         {
-            // Сначала запрашиваем цену последей фактической покупки, а если ее нет то запрашиваем максимальное предложение поставщиков
+            // Сначала запрашиваем цену последней фактической покупки, а если ее нет то запрашиваем максимальное предложение поставщиков
             var lastPrice = await _ruturnLastPrice.ReturnLastPrice(article);
 
             if (lastPrice == null )

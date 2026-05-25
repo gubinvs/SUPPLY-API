@@ -77,7 +77,7 @@ namespace SUPPLY_API
                 }
 
                 user.ActivationEmailCollaborator = true;
-                user.GuidIdCollaborator = null; // обнуляем GUID после подтверждения
+                //user.GuidIdCollaborator = null; // обнуляем GUID после подтверждения
                 _db.SaveChanges();
 
                 // return Ok(new { message = "Email подтверждён успешно!" });

@@ -53,6 +53,7 @@ namespace SUPPLY_API
             
             ReturnOffer newOffer = new ReturnOffer
             (
+                0, // Если 0 то это означает ,что нет ошибки
                 vendorCode,
                 data.NameComponent ?? "",
                 data.PurchasePrice ?? 0,

@@ -6,6 +6,8 @@ namespace SUPPLY_API
     {
         public int Id { get; set; }
 
+        public int Error {get; set;}
+
         // Артикул номенклатуры
         public string? Article { get; set; }
 
@@ -34,6 +36,7 @@ namespace SUPPLY_API
 
         public  ReturnOffer 
         (
+            int error,
             string article,
             string nameComponent,
             int price,
@@ -45,6 +48,7 @@ namespace SUPPLY_API
 
         )
         {
+            Error = error;
             Article = article;
             NameComponent = nameComponent;
             Price = price;

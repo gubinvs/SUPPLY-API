@@ -46,6 +46,20 @@ namespace SUPPLY_API
         {
              try
             {
+
+                ReturnOffer errorOffer = new ReturnOffer
+                (
+                    1, // Если 0 то это означает ,что нет ошибки, если 1 то ошибка
+                    "",
+                    "",
+                    0,
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                );
+
                 // Загрузили данные о номенклатуре согласно запрашиваемому артикулу
                 var component = await _db.SupplyComponent
                     .Where(c => c.VendorCodeComponent == article)
@@ -58,7 +72,7 @@ namespace SUPPLY_API
 
                 if (component == null)
                 {
-                    return null;
+                    return (errorOffer );
                 }
 
                 // Загрузили все предложения имеющиеся по данной номенклатуре
@@ -98,7 +112,7 @@ namespace SUPPLY_API
                     .FirstOrDefaultAsync();
 
                 if (string.IsNullOrEmpty(manufacturerComponent))
-                    return null;
+                    return (errorOffer );;
 
                 var manufacturerName = await _dbSupplyManufact.SupplyManufacturer
                     .Where(sm => sm.GuidIdManufacturer == manufacturerComponent)
@@ -111,7 +125,7 @@ namespace SUPPLY_API
                     .FirstOrDefaultAsync();
 
                 if (string.IsNullOrEmpty(unitComponent))
-                    return null;
+                    return (errorOffer );
 
                 var unitName = await _dbSupplyUnit.SupplyUnitMeasurement
                     .Where(su => su.GuidIdUnitMeasurement == unitComponent)
@@ -121,12 +135,13 @@ namespace SUPPLY_API
                 
                 if (offerWithName == null)
                 {
-                    return null;
+                    return (errorOffer);
                 }
                 
                
                 ReturnOffer newOffer = new ReturnOffer
                 (
+                    0,
                     article,
                     component.NameComponent ?? "",
                     offerWithName.PriceComponent ?? 0,

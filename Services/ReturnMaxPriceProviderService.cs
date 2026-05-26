@@ -46,7 +46,7 @@ namespace SUPPLY_API
         {
              try
             {
-
+                // Пестое сообщение если такого артикула вообще нет в базе данных
                 ReturnOffer errorOffer = new ReturnOffer
                 (
                     1, // Если 0 то это означает ,что нет ошибки, если 1 то ошибка
@@ -72,6 +72,7 @@ namespace SUPPLY_API
 
                 if (component == null)
                 {
+                    // Если в базе данных нет, то отправляем с заполненным полем error=1
                     return (errorOffer );
                 }
 
@@ -79,6 +80,11 @@ namespace SUPPLY_API
                 var offers = await _dbPrice.PriceComponent
                     .Where(p => p.GuidIdComponent == component.GuidIdComponent)
                     .ToListAsync();
+                
+                // Если номенклатура такая есть, то заполним структуру артикул и наименование, 
+                // например предложений нет, а наименование содержит информацию о замене артикула 
+                errorOffer.Article = article;
+                errorOffer.NameComponent = component.NameComponent;
 
                 var providerIds = offers.Select(o => o.GuidIdProvider).Distinct().ToList();
 

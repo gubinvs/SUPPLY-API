@@ -14,7 +14,6 @@ namespace SUPPLY_API
         // Цена покупки
         public int? Price { get; set; }
 
-
         // Дата покупки
         public string SaveDataPrice { get; set; }
 

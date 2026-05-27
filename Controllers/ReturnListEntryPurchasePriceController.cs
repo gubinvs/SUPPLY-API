@@ -6,7 +6,8 @@ namespace SUPPLY_API
 {
 
     /// <summary>
-    /// Контроллер принимает список артикулов и возвращает список последних покупок (оприходований в 1С) по каждому артикулу
+    /// Контроллер принимает список артикулов и возвращает список последних покупок (оприходований в 1С) 
+    /// по каждому принятому в контроллер артикулу
     /// 
     /// </summary>
     [Controller]
@@ -32,48 +33,25 @@ namespace SUPPLY_API
         public async Task<IActionResult> ReturnDataListEntryPurchase(ListArticle vendorCode)
         {
           
-            // Создаем список последних записей в 1С
-            List<ReturnLastPrice> returnListPrice = new List<ReturnLastPrice>();
+            if (vendorCode.Articles == null) {
+                return BadRequest(new { message = "Список артикулов пуст или не указан." });
+            }; 
 
-            // Получим все данные из базы
-            var data = await _db.PurchasePrice.ToListAsync();
+            // Выборка из массива только тех артикулов, которые пришли в запросе
+            var result = (await _db.PurchasePrice
+                .Where(x => x.Article != null &&
+                        vendorCode.Articles.Contains(x.Article))
+                    .OrderByDescending(x => x.SaveDataPrice)
+                    .ToListAsync())
+                .GroupBy(x => x.Article)
+                .Select(g => g.First())
+                .ToList();
 
-            // Оставим только те, которые соответствуют артикулу запроса
-            foreach (string vendorCode.Articles in item)
-            {
-                
-            }
-            
-            //.OrderByDescending(c => c.SaveDataPrice)
 
+            return Ok(result);
 
-                // Список результата
-    List<ReturnLastPrice> returnListPrice = new List<ReturnLastPrice>();
+              
 
-    // Получаем все записи
-    var data = await _db.PurchasePrice.ToListAsync();
-
-    // Фильтруем по артикулам
-    var filteredData = data
-        .Where(x => vendorCode.Articles.Contains(x.Article))
-        .OrderByDescending(x => x.SaveDataPrice)
-        .ToList();
-
-    // Группируем по артикулу и берем последнюю цену
-    returnListPrice = filteredData
-        .GroupBy(x => x.Article)
-        .Select(g => new ReturnLastPrice
-        {
-            Article = g.Key,
-            Price = g.First().Price,
-            SaveDataPrice = g.First().SaveDataPrice
-        })
-        .ToList();
-
-    return Ok(returnListPrice);
-                
-
-            return Ok();
         }
     }
 }

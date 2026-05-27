@@ -47,11 +47,7 @@ namespace SUPPLY_API
                 .Select(g => g.First())
                 .ToList();
 
-
             return Ok(result);
-
-              
-
         }
     }
 }

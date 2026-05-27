@@ -45,6 +45,32 @@ namespace SUPPLY_API
             }
             
             //.OrderByDescending(c => c.SaveDataPrice)
+
+
+                // Список результата
+    List<ReturnLastPrice> returnListPrice = new List<ReturnLastPrice>();
+
+    // Получаем все записи
+    var data = await _db.PurchasePrice.ToListAsync();
+
+    // Фильтруем по артикулам
+    var filteredData = data
+        .Where(x => vendorCode.Articles.Contains(x.Article))
+        .OrderByDescending(x => x.SaveDataPrice)
+        .ToList();
+
+    // Группируем по артикулу и берем последнюю цену
+    returnListPrice = filteredData
+        .GroupBy(x => x.Article)
+        .Select(g => new ReturnLastPrice
+        {
+            Article = g.Key,
+            Price = g.First().Price,
+            SaveDataPrice = g.First().SaveDataPrice
+        })
+        .ToList();
+
+    return Ok(returnListPrice);
                 
 
             return Ok();

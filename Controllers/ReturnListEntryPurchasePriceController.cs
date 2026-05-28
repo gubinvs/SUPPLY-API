@@ -14,12 +14,12 @@ namespace SUPPLY_API
     [Route("api/[controller]")]
     public class ReturnListEntryPurchasePriceController : ControllerBase
     {
-        private readonly ILogger<ReturnLastEntryPurchasePriceController> _logger;
+        private readonly ILogger<ReturnListEntryPurchasePriceController> _logger;
         private readonly SupplyContext _db;
 
         public ReturnListEntryPurchasePriceController
         (
-            ILogger<ReturnLastEntryPurchasePriceController> logger,
+            ILogger<ReturnListEntryPurchasePriceController> logger,
             SupplyContext db
         )
         {
@@ -30,7 +30,7 @@ namespace SUPPLY_API
         /// Получить первую запись в отсортированном по убыванию списке на основании даты записи
         /// тем самым возвращаем последнюю (свежую) на основании даты запись
         [HttpPost]
-        public async Task<IActionResult> ReturnDataListEntryPurchase(ListArticle vendorCode)
+        public async Task<IActionResult> ReturnDataListEntryPurchase([FromBody] ListArticle vendorCode)
         {
           
             if (vendorCode.Articles == null) {

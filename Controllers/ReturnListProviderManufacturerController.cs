@@ -25,8 +25,10 @@ namespace SUPPLY_API.Controllers
         /// Возвращает список компаний-поставщиков для номенклатуры указанного производителя.
         /// </summary>
         /// <param name="manufacturerId">GUID идентификатор производителя</param>
-        [HttpPost]
-        public async Task<IActionResult> ListProviderManufacturer(string manufacturerId)
+        /// 
+        
+       [HttpPost]
+        public async Task<IActionResult> ListProviderManufacturer([FromBody] string manufacturerId) // <-- Изменено на [FromBody]
         {
             try
             {

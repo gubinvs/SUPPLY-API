@@ -8,6 +8,7 @@ namespace SUPPLY_API
         public int Id {get; set;}
 
         public string GuidIdCollaboratorProvider {get; set;} = String.Empty;
+        
         public string GuidIdCompanyProvider {get; set;} = String.Empty;
 
         public string NameCollaboratorProvider {get; set;} = String.Empty;

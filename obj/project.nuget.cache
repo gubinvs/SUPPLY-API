@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "iSWA8X5MfMM=",
+  "dgSpecHash": "k1ZLwyFKehY=",
   "success": true,
-  "projectFilePath": "/home/gubinvs/SUPPLY-API/SUPPLY-API.csproj",
+  "projectFilePath": "/home/gubinvs/DEVELOPMENT/SUPPLY-API/SUPPLY-API.csproj",
   "expectedPackageFiles": [
     "/home/gubinvs/.nuget/packages/azure.core/1.35.0/azure.core.1.35.0.nupkg.sha512",
     "/home/gubinvs/.nuget/packages/azure.identity/1.10.3/azure.identity.1.10.3.nupkg.sha512",

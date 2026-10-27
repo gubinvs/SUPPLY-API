@@ -25,7 +25,8 @@ RUN dotnet publish "SUPPLY-API.csproj" -c $configuration -o /app/publish /p:UseA
 FROM base AS final
 WORKDIR /app
 
-COPY --from=publish /app/publish .
+# В самом конце Dockerfile, где копируются готовые бинарники:
+COPY --from=publish --chown=app:app /app/publish .
 
 # создаём папку для файлов и даём права
 USER root

@@ -153,7 +153,8 @@ namespace SUPPLY_API
                     .Where(sm => sm.GuidIdManufacturer == manufacturerComponent)
                     .Select(sm => sm.NameManufacturer)
                     .FirstOrDefaultAsync();
-                            var unitComponent = await _dbUnit.UnitMeasurementComponent
+            
+            var unitComponent = await _dbUnit.UnitMeasurementComponent
                     .Where(c => c.GuidIdComponent == component.GuidIdComponent)
                     .Select(c => c.GuidIdUnitMeasurement)
                     .FirstOrDefaultAsync();

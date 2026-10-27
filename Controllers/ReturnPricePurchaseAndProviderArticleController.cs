@@ -160,7 +160,7 @@ namespace SUPPLY_API
                     .FirstOrDefaultAsync();
 
             if (string.IsNullOrEmpty(unitComponent))
-             {
+            {
                 return NotFound(errorOffer);
             }
 

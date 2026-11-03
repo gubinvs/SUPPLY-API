@@ -65,11 +65,11 @@ builder.Services.AddScoped<SomeServiceUsingToken>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<EmailSender>();
 
-builder.Services.AddHostedService<EmailCleanupHostedService>();
-builder.Services.AddHostedService<DuplicateCleanupComponentService>(); // удаление дублей номенклатуры
-builder.Services.AddHostedService<RemoveDuplicatesManufacturer>(); // удаление дублей производителей
+//builder.Services.AddHostedService<EmailCleanupHostedService>();
+//builder.Services.AddHostedService<DuplicateCleanupComponentService>(); // удаление дублей номенклатуры
+//builder.Services.AddHostedService<RemoveDuplicatesManufacturer>(); // удаление дублей производителей
 builder.Services.AddHostedService<DataCopyService>(); 
-builder.Services.AddHostedService<ShopDataSyncService>(); // копирование номенклатуры из магазина
+//builder.Services.AddHostedService<ShopDataSyncService>(); // копирование номенклатуры из магазина
 builder.Services.AddScoped<ReturnMaxPriceProviderService>(); // Возвращает максимальное предложение по цене
 builder.Services.AddScoped<ReturnLastPurchasePriceService>(); // Возвращает свежую по дате цену покупки
 // Регистрируем наш сервис миграций

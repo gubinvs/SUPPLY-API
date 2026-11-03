@@ -1,10 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using SUPPLY_API;
 
 public class MigrationHostedService : IHostedService
@@ -26,10 +20,44 @@ public class MigrationHostedService : IHostedService
         {
             try
             {
+                var сollaboratorSystem = scope.ServiceProvider.GetRequiredService<CollaboratorSystemContext>();
+                await сollaboratorSystem.Database.MigrateAsync(cancellationToken);
+
+                var сompanyCollaborator = scope.ServiceProvider.GetRequiredService<CompanyCollaboratorContext>();
+                await сompanyCollaborator.Database.MigrateAsync(cancellationToken);
+
+                var deliveryAddress = scope.ServiceProvider.GetRequiredService<DeliveryAddressContext>();
+                await deliveryAddress.Database.MigrateAsync(cancellationToken);
+
+                var handyDb = scope.ServiceProvider.GetRequiredService<HandyDbContext>();
+                await handyDb.Database.MigrateAsync(cancellationToken);
+
+                var manufacturerComponent = scope.ServiceProvider.GetRequiredService<ManufacturerComponentContext>();
+                await manufacturerComponent.Database.MigrateAsync(cancellationToken);
+
+                var supplyCompany = scope.ServiceProvider.GetRequiredService<SupplyCompanyContext>();
+                await supplyCompany.Database.MigrateAsync(cancellationToken);
+
+                var supplyComponent = scope.ServiceProvider.GetRequiredService<SupplyComponentContext>();
+                await supplyComponent.Database.MigrateAsync(cancellationToken);
+
                 var dbContext = scope.ServiceProvider.GetRequiredService<SupplyContext>();
-                
-                // Используем асинхронную версию для предотвращения блокировки потока
                 await dbContext.Database.MigrateAsync(cancellationToken);
+
+                var supplyManufacturer = scope.ServiceProvider.GetRequiredService<SupplyManufacturerContext>();
+                await supplyManufacturer.Database.MigrateAsync(cancellationToken);
+
+                var supplyPriceComponent = scope.ServiceProvider.GetRequiredService<SupplyPriceComponentContext>();
+                await supplyPriceComponent.Database.MigrateAsync(cancellationToken);
+
+                var supplyProvider = scope.ServiceProvider.GetRequiredService<SupplyProviderContext>();
+                await supplyProvider.Database.MigrateAsync(cancellationToken);
+
+                var supplyUnitMeasurement = scope.ServiceProvider.GetRequiredService<SupplyUnitMeasurementContext>();
+                await supplyUnitMeasurement.Database.MigrateAsync(cancellationToken);
+
+                var unitMeasurementComponent = scope.ServiceProvider.GetRequiredService<UnitMeasurementComponentContext>();
+                await unitMeasurementComponent.Database.MigrateAsync(cancellationToken);
                 
                 _logger.LogInformation("--> Миграции успешно применились, таблицы созданы!");
             }

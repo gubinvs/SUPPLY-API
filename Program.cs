@@ -4,10 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.DataProtection;
 using SUPPLY_API;
-using SUPPLY_API.Services; // <--- обязательно
 
-using SUPPLY_API.Models;
-using Pomelo.EntityFrameworkCore.MySql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +49,9 @@ builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 
 // --- Сервисы ---
+// БЫЛО: builder.Services.AddScoped<MigrationHostedService>();
+// СТАЛО:
+builder.Services.AddHostedService<MigrationHostedService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -65,22 +65,14 @@ builder.Services.AddScoped<SomeServiceUsingToken>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<EmailSender>();
 
-//builder.Services.AddHostedService<EmailCleanupHostedService>();
-//builder.Services.AddHostedService<DuplicateCleanupComponentService>(); // удаление дублей номенклатуры
-//builder.Services.AddHostedService<RemoveDuplicatesManufacturer>(); // удаление дублей производителей
-builder.Services.AddHostedService<DataCopyService>(); 
-//builder.Services.AddHostedService<ShopDataSyncService>(); // копирование номенклатуры из магазина
+builder.Services.AddHostedService<EmailCleanupHostedService>();
+builder.Services.AddHostedService<RemoveDuplicatesManufacturer>(); // удаление дублей производителей
 builder.Services.AddScoped<ReturnMaxPriceProviderService>(); // Возвращает максимальное предложение по цене
 builder.Services.AddScoped<ReturnLastPurchasePriceService>(); // Возвращает свежую по дате цену покупки
-// Регистрируем наш сервис миграций
-builder.Services.AddHostedService<MigrationHostedService>();
-
 
 
 // --- Проверка строк подключения ---
 var defaultConn = builder.Configuration.GetConnectionString("AppDatabase");
-var handyConn = builder.Configuration.GetConnectionString("HandyDatabase");
-var shopConntext = builder.Configuration.GetConnectionString("ShopDatabase");
 
 // --- DbContexts ---
 builder.Services.AddDbContext<UnitMeasurementComponentContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
@@ -94,9 +86,9 @@ builder.Services.AddDbContext<CollaboratorSystemContext>(opt => opt.UseMySql(def
 builder.Services.AddDbContext<CompanyCollaboratorContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
 builder.Services.AddDbContext<DeliveryAddressContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
 builder.Services.AddDbContext<ManufacturerComponentContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
-builder.Services.AddDbContext<HandyDbContext>(opt => opt.UseMySql(handyConn, ServerVersion.AutoDetect(handyConn)));
+builder.Services.AddDbContext<HandyDbContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
 builder.Services.AddDbContext<SupplyContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
-builder.Services.AddDbContext<ShopContext>(opt => opt.UseMySql(shopConntext, ServerVersion.AutoDetect(shopConntext)));
+builder.Services.AddDbContext<ShopContext>(opt => opt.UseMySql(defaultConn, ServerVersion.AutoDetect(defaultConn)));
 
 
 

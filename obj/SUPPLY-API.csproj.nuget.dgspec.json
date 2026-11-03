@@ -1,26 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "/home/gubinvs/DEVELOPMENT/SUPPLY-API/SUPPLY-API.csproj": {}
+    "/Users/vladimirgubin/Documents/07 WEB-DEVELOPER/LEAN_SUPPLY/SUPPLY-API/SUPPLY-API.csproj": {}
   },
   "projects": {
-    "/home/gubinvs/DEVELOPMENT/SUPPLY-API/SUPPLY-API.csproj": {
+    "/Users/vladimirgubin/Documents/07 WEB-DEVELOPER/LEAN_SUPPLY/SUPPLY-API/SUPPLY-API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/gubinvs/DEVELOPMENT/SUPPLY-API/SUPPLY-API.csproj",
+        "projectUniqueName": "/Users/vladimirgubin/Documents/07 WEB-DEVELOPER/LEAN_SUPPLY/SUPPLY-API/SUPPLY-API.csproj",
         "projectName": "SUPPLY-API",
-        "projectPath": "/home/gubinvs/DEVELOPMENT/SUPPLY-API/SUPPLY-API.csproj",
-        "packagesPath": "/home/gubinvs/.nuget/packages/",
-        "outputPath": "/home/gubinvs/DEVELOPMENT/SUPPLY-API/obj/",
+        "projectPath": "/Users/vladimirgubin/Documents/07 WEB-DEVELOPER/LEAN_SUPPLY/SUPPLY-API/SUPPLY-API.csproj",
+        "packagesPath": "/Users/vladimirgubin/.nuget/packages/",
+        "outputPath": "/Users/vladimirgubin/Documents/07 WEB-DEVELOPER/LEAN_SUPPLY/SUPPLY-API/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/gubinvs/.nuget/NuGet/NuGet.Config"
+          "/Users/vladimirgubin/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "/usr/lib/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -47,31 +46,33 @@
           "dependencies": {
             "ClosedXML": {
               "target": "Package",
-              "version": "[0.102.2, )"
+              "version": "[0.104.2, )"
             },
             "EPPlus": {
               "target": "Package",
-              "version": "[6.0.3, )"
-            },
-            "IdentityModel": {
-              "target": "Package",
-              "version": "[7.0.0, )"
+              "version": "[7.5.2, )"
             },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
-              "version": "[8.0.0, )"
+              "version": "[9.0.0, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[8.0.5, )"
+              "version": "[9.0.0, )"
             },
-            "Microsoft.EntityFrameworkCore.SqlServer": {
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.5, )"
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[9.0.0, )"
             },
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
-              "version": "[1.20.1, )"
+              "version": "[1.21.0, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
@@ -79,7 +80,7 @@
             },
             "Pomelo.EntityFrameworkCore.MySql": {
               "target": "Package",
-              "version": "[8.0.1, )"
+              "version": "[9.0.0-preview.2.efcore.9.0.0, )"
             },
             "QRCoder": {
               "target": "Package",
@@ -87,11 +88,11 @@
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[6.4.0, )"
+              "version": "[7.2.0, )"
             },
             "System.Threading.Tasks.Dataflow": {
               "target": "Package",
-              "version": "[9.0.10, )"
+              "version": "[9.0.0, )"
             },
             "Xceed.Words.NET": {
               "target": "Package",
@@ -117,7 +118,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.116/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

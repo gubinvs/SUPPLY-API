@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SUPPLY_API.Services;
 
 namespace SUPPLY_API
 {

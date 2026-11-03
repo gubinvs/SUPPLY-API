@@ -11,7 +11,7 @@ namespace SUPPLY_API
         public string? GuidIdComponent { get; set; }
 
         // Артикул номенклатуры
-        public string Article { get; set; } = string.Empty;
+        public string? Article { get; set; }
 
         // Наименование номенклатуры
         public string? NameComponent { get; set; }

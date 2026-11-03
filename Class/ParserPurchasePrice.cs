@@ -1,6 +1,5 @@
 
 using System.Globalization;
-using IdentityModel.Client;
 
 namespace SUPPLY_API {
     /// <summary>

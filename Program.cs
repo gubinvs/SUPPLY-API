@@ -72,6 +72,9 @@ builder.Services.AddHostedService<DataCopyService>();
 builder.Services.AddHostedService<ShopDataSyncService>(); // копирование номенклатуры из магазина
 builder.Services.AddScoped<ReturnMaxPriceProviderService>(); // Возвращает максимальное предложение по цене
 builder.Services.AddScoped<ReturnLastPurchasePriceService>(); // Возвращает свежую по дате цену покупки
+// Регистрируем наш сервис миграций
+builder.Services.AddHostedService<MigrationHostedService>();
+
 
 
 // --- Проверка строк подключения ---
@@ -158,25 +161,6 @@ if (app.Environment.IsDevelopment())
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
-// ---- БЛОК АВТОМАТИЧЕСКОЙ МИГРАЦИИ ----
-using (var scope = app.Services.CreateScope())
-{
-    try
-    {
-        // ЗАМЕНИТЕ YourDbContext на реальное имя вашего класса контекста (например, ApplicationDbContext или MyDbContext)
-        var dbContext = scope.ServiceProvider.GetRequiredService<SupplyContext>(); 
-        
-        Console.WriteLine("--> Проверка и применение миграций к MySQL...");
-        dbContext.Database.Migrate();
-        Console.WriteLine("--> Миграции успешно применились, таблицы созданы!");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"--> КРИТИЧЕСКАЯ ОШИБКА МИГРАЦИИ: {ex.Message}");
-    }
-}
-// --------------------------------------
 
 
 app.Run();

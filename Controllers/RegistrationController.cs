@@ -41,9 +41,15 @@ namespace SUPPLY_API
             var guidId = Guid.NewGuid();
             var token = _tokenService.GenerateToken(model.Email, "User");
 
-            _dbContext.Database.ExecuteSqlRaw(
+            //_dbContext.Database.ExecuteSqlRaw(
+            //    "INSERT INTO CollaboratorSystem (GuidIdCollaborator, GuidIdRoleSystem, EmailCollaborator, PasswordCollaborator, DataRegistrationCollaborator, ActivationEmailCollaborator) VALUES({0}, {1}, {2}, {3}, {4}, {5})",
+            //   guidId, model.GuidIdRoleSystem, model.Email, model.Password, DateTime.Now, false
+            //);
+
+            // Для внутреннего использования сразу активируем логин, без подтверждения почты
+              _dbContext.Database.ExecuteSqlRaw(
                 "INSERT INTO CollaboratorSystem (GuidIdCollaborator, GuidIdRoleSystem, EmailCollaborator, PasswordCollaborator, DataRegistrationCollaborator, ActivationEmailCollaborator) VALUES({0}, {1}, {2}, {3}, {4}, {5})",
-                guidId, model.GuidIdRoleSystem, model.Email, model.Password, DateTime.Now, false
+                guidId, model.GuidIdRoleSystem, model.Email, model.Password, DateTime.Now, true
             );
 
             _dbContext.SaveChanges();

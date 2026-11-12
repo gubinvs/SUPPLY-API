@@ -96,6 +96,10 @@
               "target": "Package",
               "version": "[7.2.0, )"
             },
+            "System.Security.Cryptography.Pkcs": {
+              "target": "Package",
+              "version": "[11.0.0-rc.3.26522.148, )"
+            },
             "System.Threading.Tasks.Dataflow": {
               "target": "Package",
               "version": "[9.0.0, )"

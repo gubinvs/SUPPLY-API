@@ -28,6 +28,7 @@
   <PackageReference Include="ClosedXML" Version="0.104.2" />
   <PackageReference Include="QRCoder" Version="1.6.0" />
   <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+  <PackageReference Include="System.Security.Cryptography.Pkcs" Version="11.0.0-rc.3.26522.148" />
   <!-- Вот исправленная строка -->
   <PackageReference Include="System.Threading.Tasks.Dataflow" Version="9.0.0" />
   <PackageReference Include="Xceed.Words.NET" Version="4.0.25103.5784" />

@@ -959,3 +959,6 @@ C:\Users\Владимир\Documents\HANDY-SUPPLY\SUPPLY-API\obj\Debug\net9.0\ref
 C:\Users\Владимир\Documents\HANDY-SUPPLY\SUPPLY-API\obj\Debug\net9.0\SUPPLY-API.pdb
 C:\Users\Владимир\Documents\HANDY-SUPPLY\SUPPLY-API\obj\Debug\net9.0\SUPPLY-API.genruntimeconfig.cache
 C:\Users\Владимир\Documents\HANDY-SUPPLY\SUPPLY-API\obj\Debug\net9.0\ref\SUPPLY-API.dll
+C:\Users\Владимир\Documents\HANDY-SUPPLY\SUPPLY-API\bin\Debug\net9.0\Microsoft.Bcl.Cryptography.dll
+C:\Users\Владимир\Documents\HANDY-SUPPLY\SUPPLY-API\bin\Debug\net9.0\System.Formats.Asn1.dll
+C:\Users\Владимир\Documents\HANDY-SUPPLY\SUPPLY-API\bin\Debug\net9.0\System.Security.Cryptography.Pkcs.dll

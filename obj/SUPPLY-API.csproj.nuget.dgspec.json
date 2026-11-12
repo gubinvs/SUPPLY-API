@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/vladimirgubin/Documents/07 WEB-DEVELOPER/LEAN_SUPPLY/SUPPLY-API/SUPPLY-API.csproj": {}
+    "C:\\Users\\Владимир\\Documents\\HANDY-SUPPLY\\SUPPLY-API\\SUPPLY-API.csproj": {}
   },
   "projects": {
-    "/Users/vladimirgubin/Documents/07 WEB-DEVELOPER/LEAN_SUPPLY/SUPPLY-API/SUPPLY-API.csproj": {
+    "C:\\Users\\Владимир\\Documents\\HANDY-SUPPLY\\SUPPLY-API\\SUPPLY-API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/vladimirgubin/Documents/07 WEB-DEVELOPER/LEAN_SUPPLY/SUPPLY-API/SUPPLY-API.csproj",
+        "projectUniqueName": "C:\\Users\\Владимир\\Documents\\HANDY-SUPPLY\\SUPPLY-API\\SUPPLY-API.csproj",
         "projectName": "SUPPLY-API",
-        "projectPath": "/Users/vladimirgubin/Documents/07 WEB-DEVELOPER/LEAN_SUPPLY/SUPPLY-API/SUPPLY-API.csproj",
-        "packagesPath": "/Users/vladimirgubin/.nuget/packages/",
-        "outputPath": "/Users/vladimirgubin/Documents/07 WEB-DEVELOPER/LEAN_SUPPLY/SUPPLY-API/obj/",
+        "projectPath": "C:\\Users\\Владимир\\Documents\\HANDY-SUPPLY\\SUPPLY-API\\SUPPLY-API.csproj",
+        "packagesPath": "C:\\Users\\Владимир\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Владимир\\Documents\\HANDY-SUPPLY\\SUPPLY-API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/vladimirgubin/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Владимир\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -24,6 +24,7 @@
         },
         "frameworks": {
           "net9.0": {
+            "framework": "net9.0",
             "targetAlias": "net9.0",
             "projectReferences": {}
           }
@@ -38,10 +39,11 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.100"
+        "SdkAnalysisLevel": "10.0.400"
       },
       "frameworks": {
         "net9.0": {
+          "framework": "net9.0",
           "targetAlias": "net9.0",
           "dependencies": {
             "ClosedXML": {
@@ -73,6 +75,10 @@
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
               "version": "[1.21.0, )"
+            },
+            "MySqlConnector": {
+              "target": "Package",
+              "version": "[2.6.1, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
@@ -110,6 +116,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.23, 9.0.23]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[9.0.23, 9.0.23]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.23, 9.0.23]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[9.0.23, 9.0.23]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -118,7 +142,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.101/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.404/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

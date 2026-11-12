@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "targets": {
     "net9.0": {
       "ClosedXML/0.104.2": {
@@ -1074,7 +1074,7 @@
           "buildTransitive/Mono.TextTemplating.targets": {}
         }
       },
-      "MySqlConnector/2.4.0": {
+      "MySqlConnector/2.6.1": {
         "type": "package",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2",
@@ -4016,14 +4016,16 @@
         "readme.md"
       ]
     },
-    "MySqlConnector/2.4.0": {
-      "sha512": "78M+gVOjbdZEDIyXQqcA7EYlCGS3tpbUELHvn6638A2w0pkPI625ixnzsa5staAd3N9/xFmPJtkKDYwsXpFi/w==",
+    "MySqlConnector/2.6.1": {
+      "sha512": "MzNSfnHWBc0Mo3zVbYxG+556zuex9obs8NYtwcPCwFahel40e49stH+osjX4k/doEHp4LT/zTtGdax4nlGWhcw==",
       "type": "package",
-      "path": "mysqlconnector/2.4.0",
+      "path": "mysqlconnector/2.6.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "README.md",
+        "lib/net10.0/MySqlConnector.dll",
+        "lib/net10.0/MySqlConnector.xml",
         "lib/net462/MySqlConnector.dll",
         "lib/net462/MySqlConnector.xml",
         "lib/net471/MySqlConnector.dll",
@@ -4041,7 +4043,7 @@
         "lib/netstandard2.1/MySqlConnector.dll",
         "lib/netstandard2.1/MySqlConnector.xml",
         "logo.png",
-        "mysqlconnector.2.4.0.nupkg.sha512",
+        "mysqlconnector.2.6.1.nupkg.sha512",
         "mysqlconnector.nuspec"
       ]
     },
@@ -5112,6 +5114,7 @@
       "Microsoft.EntityFrameworkCore.Design >= 9.0.0",
       "Microsoft.EntityFrameworkCore.Relational >= 9.0.0",
       "Microsoft.VisualStudio.Azure.Containers.Tools.Targets >= 1.21.0",
+      "MySqlConnector >= 2.6.1",
       "Newtonsoft.Json >= 13.0.3",
       "Pomelo.EntityFrameworkCore.MySql >= 9.0.0-preview.2.efcore.9.0.0",
       "QRCoder >= 1.6.0",
@@ -5121,19 +5124,19 @@
     ]
   },
   "packageFolders": {
-    "/Users/vladimirgubin/.nuget/packages/": {}
+    "C:\\Users\\Владимир\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/vladimirgubin/Documents/07 WEB-DEVELOPER/LEAN_SUPPLY/SUPPLY-API/SUPPLY-API.csproj",
+      "projectUniqueName": "C:\\Users\\Владимир\\Documents\\HANDY-SUPPLY\\SUPPLY-API\\SUPPLY-API.csproj",
       "projectName": "SUPPLY-API",
-      "projectPath": "/Users/vladimirgubin/Documents/07 WEB-DEVELOPER/LEAN_SUPPLY/SUPPLY-API/SUPPLY-API.csproj",
-      "packagesPath": "/Users/vladimirgubin/.nuget/packages/",
-      "outputPath": "/Users/vladimirgubin/Documents/07 WEB-DEVELOPER/LEAN_SUPPLY/SUPPLY-API/obj/",
+      "projectPath": "C:\\Users\\Владимир\\Documents\\HANDY-SUPPLY\\SUPPLY-API\\SUPPLY-API.csproj",
+      "packagesPath": "C:\\Users\\Владимир\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Владимир\\Documents\\HANDY-SUPPLY\\SUPPLY-API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/vladimirgubin/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\Владимир\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -5143,6 +5146,7 @@
       },
       "frameworks": {
         "net9.0": {
+          "framework": "net9.0",
           "targetAlias": "net9.0",
           "projectReferences": {}
         }
@@ -5157,10 +5161,11 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.100"
+      "SdkAnalysisLevel": "10.0.400"
     },
     "frameworks": {
       "net9.0": {
+        "framework": "net9.0",
         "targetAlias": "net9.0",
         "dependencies": {
           "ClosedXML": {
@@ -5192,6 +5197,10 @@
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
             "target": "Package",
             "version": "[1.21.0, )"
+          },
+          "MySqlConnector": {
+            "target": "Package",
+            "version": "[2.6.1, )"
           },
           "Newtonsoft.Json": {
             "target": "Package",
@@ -5229,6 +5238,24 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[9.0.23, 9.0.23]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.win-x64",
+            "version": "[9.0.23, 9.0.23]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[9.0.23, 9.0.23]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
+            "version": "[9.0.23, 9.0.23]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"
@@ -5237,7 +5264,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.404/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

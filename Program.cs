@@ -51,7 +51,7 @@ builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 // --- Сервисы ---
 // БЫЛО: builder.Services.AddScoped<MigrationHostedService>();
 // СТАЛО:
-builder.Services.AddHostedService<MigrationHostedService>();
+// builder.Services.AddHostedService<MigrationHostedService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -66,7 +66,7 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<EmailSender>();
 
 builder.Services.AddHostedService<EmailCleanupHostedService>();
-builder.Services.AddHostedService<RemoveDuplicatesManufacturer>(); // удаление дублей производителей
+//builder.Services.AddHostedService<RemoveDuplicatesManufacturer>(); // удаление дублей производителей
 builder.Services.AddScoped<ReturnMaxPriceProviderService>(); // Возвращает максимальное предложение по цене
 builder.Services.AddScoped<ReturnLastPurchasePriceService>(); // Возвращает свежую по дате цену покупки
 
